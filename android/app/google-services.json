@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "546736889925",
+    "project_id": "themanifestapp-dafd1",
+    "storage_bucket": "themanifestapp-dafd1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:546736889925:android:330f1c4f91a08c8e4e032c",
+        "android_client_info": {
+          "package_name": "com.example.themanifestapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbhXMhAtQBfC-GUzD273PalF02RUepyYQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
