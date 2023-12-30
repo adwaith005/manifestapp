@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
 import 'package:themanifestapp/Admin/login.dart';
 import 'package:themanifestapp/Screens/bottomnav.dart';
 
@@ -23,16 +26,16 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Stack(
         children: [
           Positioned(
-            top: 0, // Adjust the top position based on the image height
+            top: 0,
             left: 0,
             right: 0,
-            bottom: MediaQuery.of(context).size.height / 4, // Adjust height
+            bottom: MediaQuery.of(context).size.height / 3,
             child: Container(
               color: Colors.black,
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 120, right: 30),
+                    padding: const EdgeInsets.only(top: 110, right: 30),
                     child: Image.asset(
                       'lib/images/manifestlogo.png',
                       height: 80,
@@ -42,10 +45,8 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-
-          // White background with rounded corners
           Positioned(
-            top: MediaQuery.of(context).size.height / 4, // Adjust position
+            top: MediaQuery.of(context).size.height / 4,
             left: 0,
             right: 0,
             bottom: 0,
@@ -63,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(left: 40, top: 60),
+                        padding: const EdgeInsets.only(left: 30, top: 60),
                         child: Text(
                           'Hey, Welcome back to BROTOTYPE Manifest',
                           style: TextStyle(
@@ -85,17 +86,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: InputDecoration(
                             labelText: 'Batch no:',
                             labelStyle: TextStyle(
-                              color:
-                                  Colors.black, // Change to black for contrast
+                              color: Colors.black,
                               fontFamily: GoogleFonts.poppins().fontFamily,
                             ),
                             enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Colors.black), // Change to black
+                              borderSide: BorderSide(color: Colors.black),
                             ),
                             focusedBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Colors.black), // Change to black
+                              borderSide: BorderSide(color: Colors.black),
                             ),
                             errorBorder: const OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.red),
@@ -105,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           style: TextStyle(
-                            color: Colors.black, // Change to black for contrast
+                            color: Colors.black,
                             fontFamily: GoogleFonts.poppins().fontFamily,
                           ),
                           validator: (value) {
@@ -122,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           controller: emailController,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           decoration: InputDecoration(
-                            labelText: 'Enter Email or phone no:',
+                            labelText: 'Enter Email :',
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontFamily: GoogleFonts.poppins().fontFamily,
@@ -206,6 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {
                             if (_formKey.currentState != null &&
                                 _formKey.currentState!.validate()) {
+                              // ignore: avoid_print
                               print('object clicked');
                               onLogin();
                             }
@@ -227,7 +226,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         padding: const EdgeInsets.only(top: 50),
                         child: GestureDetector(
                           onTap: () {
-                            // Navigate to another page when "Admin" is tapped
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -240,7 +238,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               text: 'Login as ',
                               style: TextStyle(
                                 color: Colors.black,
-                                // Add any styles for the non-bold part
                               ),
                               children: <TextSpan>[
                                 TextSpan(
@@ -255,6 +252,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
+                      const SizedBox(
+                        height: 155,
+                      )
                     ],
                   ),
                 ),
@@ -266,10 +266,10 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  onLogin() async {
-    final batchNo = _batchnumberController.text.toString();
-    final email = emailController.text.toString();
-
+onLogin() async {
+  try {
+    final batchNo = _batchnumberController.text.toString().trim();
+    final email = emailController.text.toString().trim();
     final studentRef = FirebaseFirestore.instance
         .collection('Batches')
         .doc(batchNo)
@@ -278,20 +278,27 @@ class _LoginScreenState extends State<LoginScreen> {
     final studentsnapshot = await studentRef.get();
 
     if (studentsnapshot.exists) {
-      // Check if the document exists before accessing its data
       final studentData = studentsnapshot.data() as Map<String, dynamic>;
-
       if (emailController.text == studentData['email'] &&
           passwordController.text == studentData['password']) {
-        // ignore: use_build_context_synchronously
+        // Log user details to the console
+        log('User is logged in. User Details: $studentData');
+
+        // Set the login status in Hive
+        await Hive.box<bool>('isLoggedIn').put('status', true);
+
+        // Navigate to the home screen
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const bottomNavigationBar(),
+            builder: (context) => bottomNavigationBar(
+              batchNo: batchNo,
+              email: email,
+              userDetails: studentData,
+            ),
           ),
         );
       } else {
-        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Invalid credentials. Please try again.'),
@@ -299,13 +306,20 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } else {
-      // Show snackbar for user not found
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('User not found. Please check your details.'),
         ),
       );
     }
+  } catch (e) {
+    log('Error during login: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('An error occurred. Please try again.'),
+      ),
+    );
   }
+}
+
 }

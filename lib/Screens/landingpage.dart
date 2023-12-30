@@ -12,7 +12,7 @@ class Landingpage extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(
-              height: 30,
+              height: 20,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -49,7 +49,7 @@ class Landingpage extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 70),
+              padding: const EdgeInsets.only(top: 20),
               child:Container(
                 width: 338,
                 height: 50,
@@ -70,7 +70,7 @@ class Landingpage extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(
-                        0xFF090B0B), // Change the button color as needed
+                        0xFF090B0B), 
                   ),
                   child: Text(
                     'Get Started',

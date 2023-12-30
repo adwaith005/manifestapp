@@ -14,9 +14,7 @@ class _AdminloginState extends State<Adminlogin> {
     return Scaffold(
       body: Stack(
         children: [
-          // Image at the top of the black container
 
-          // Black background (shorter)
           Positioned(
             top: 0,
             left: 0,
@@ -38,7 +36,6 @@ class _AdminloginState extends State<Adminlogin> {
             ),
           ),
 
-          // White background with rounded corners
           Positioned(
             top: MediaQuery.of(context).size.height / 4,
             left: 0,

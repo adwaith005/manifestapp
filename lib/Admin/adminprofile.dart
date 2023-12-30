@@ -62,13 +62,12 @@ class _AdminprofileState extends State<Adminprofile> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop(); 
               },
               child: const Text('No'),
             ),
             TextButton(
               onPressed: () {
-                // Handle logout functionality
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => const LoginScreen()),

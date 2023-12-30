@@ -152,7 +152,6 @@ class _StudentListState extends State<StudentList> {
                                   ),
                                 ),
                               ],
-                              // Inside your _StudentListState class, update the onSelected method
                               onSelected: (value) async {
                                 final documentId = filteredDocuments[index].id;
                                 if (value == 'edit') {
@@ -195,14 +194,12 @@ class _StudentListState extends State<StudentList> {
     );
   }
 
-  // Add this method to your _StudentListState class
   Future<void> _showEditDialog(
       BuildContext context, String studentName, String documentId) async {
     // Fetch the current student details using the documentId
     DocumentSnapshot studentSnapshot =
         await widget.batchRef.collection('students').doc(documentId).get();
 
-    // Extract data from the snapshot with default values
     Map<String, dynamic> studentData =
         studentSnapshot.data() as Map<String, dynamic>;
     String name = studentData['name'] ?? '';
@@ -211,7 +208,6 @@ class _StudentListState extends State<StudentList> {
     String domain = studentData['domain'] ?? '';
     String password = studentData['password'] ?? '';
 
-    // Create controllers and set initial values
     TextEditingController nameController = TextEditingController(text: name);
     TextEditingController emailController = TextEditingController(text: email);
     TextEditingController phoneNumberController =
@@ -221,7 +217,6 @@ class _StudentListState extends State<StudentList> {
     TextEditingController passwordController =
         TextEditingController(text: password);
 
-    // Show the dialog with the form for editing details
     // ignore: use_build_context_synchronously
     showDialog(
       context: context,
@@ -233,7 +228,6 @@ class _StudentListState extends State<StudentList> {
             // Use the same form key if needed
             child: Column(
               children: [
-                // Add TextFormField widgets for other fields as needed
                 TextFormField(
                   controller: nameController,
                   decoration: const InputDecoration(labelText: 'Name'),
@@ -271,7 +265,6 @@ class _StudentListState extends State<StudentList> {
           ),
           TextButton(
             onPressed: () async {
-              // Perform the update operation
               await widget.batchRef
                   .collection('students')
                   .doc(documentId)
@@ -281,11 +274,9 @@ class _StudentListState extends State<StudentList> {
                 'phoneNumber': phoneNumberController.text,
                 'domain': domainController.text,
                 'password': passwordController.text,
+              }).then((value) {
+                Navigator.pop(context);
               });
-
-              // Close the dialog
-              // ignore: use_build_context_synchronously
-              Navigator.pop(context);
             },
             child: const Text(
               'Save',

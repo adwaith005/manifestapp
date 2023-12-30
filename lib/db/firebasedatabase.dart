@@ -9,7 +9,6 @@ class MyFirebaseDatabase {
     try {
       await _firestore.collection("Batches").doc(batchNo).set({
         'batchName': batchName,
-        // Add other fields as needed
       });
       print("Batch added successfully!");
     } catch (error) {
@@ -33,13 +32,15 @@ class MyFirebaseDatabase {
       await _firestore
           .collection("Batches")
           .doc(batchNo)
-          .collection("students").doc(email).set({
-            'name': name,
+          .collection("students")
+          .doc(email)
+          .set({
+        'name': name,
         'email': email,
         'phoneNumber': phoneNumber,
         'domain': domain,
         'password': password,
-          });
+      });
       log("Student added successfully!");
     } catch (error) {
       log("Error adding student: $error");
@@ -47,7 +48,6 @@ class MyFirebaseDatabase {
   }
 
   Future<void> deleteBatch(DocumentReference batchRef) async {
-    // Delete the batch document
     await batchRef.delete();
 
     // Delete all student documents within the batch
@@ -55,6 +55,26 @@ class MyFirebaseDatabase {
     final studentSnapshots = await studentsCollection.get();
     for (var snapshot in studentSnapshots.docs) {
       await snapshot.reference.delete();
+    }
+  }
+   Future<Map<String, dynamic>> getUserDetails(String batchNo, String email) async {
+    try {
+      final studentRef = _firestore
+          .collection("Batches")
+          .doc(batchNo)
+          .collection("students")
+          .doc(email);
+
+      final studentSnapshot = await studentRef.get();
+      if (studentSnapshot.exists) {
+        return studentSnapshot.data() as Map<String, dynamic>;
+      } else {
+        log("User not found");
+        return {};
+      }
+    } catch (error) {
+      log("Error fetching user details: $error");
+      return {};
     }
   }
 }

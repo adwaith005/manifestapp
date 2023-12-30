@@ -46,10 +46,10 @@ class _AdminBottomNavigationBarState extends State<AdminBottomNavigationBar> {
           ),
           TabItem(icon: Icons.batch_prediction_sharp, title: 'Batches'),
           TabItem(icon: Icons.person, title: 'Profile'),
-          // Add the Batches tab
+      
         ],
-        activeColor: Colors.black, // Color for the active icon
-        color: Colors.grey, // Color for the inactive icons
+        activeColor: Colors.black, 
+        color: Colors.grey, 
         initialActiveIndex: _currentIndex,
         onTap: (int index) {
           setState(() {
@@ -68,9 +68,8 @@ class _AdminBottomNavigationBarState extends State<AdminBottomNavigationBar> {
       case 1:
         return const Batches();
       case 2:
-        return const Adminprofile(); // Add the Batches screen
+        return const Adminprofile(); 
     }
-    // Return an empty container by default
     return Container();
   }
 

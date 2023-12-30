@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:themanifestapp/Screens/landingpage.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:themanifestapp/Screens/bottomnav.dart';
+import 'package:themanifestapp/Screens/login.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -37,12 +40,27 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  Future<void> timetaking() async {
-    await Future.delayed(const Duration(seconds: 3));
-    // ignore: use_build_context_synchronously
+Future<void> timetaking() async {
+  await Hive.initFlutter();
+
+  final Box<bool> box = await Hive.openBox<bool>('isLoggedIn');
+  final bool? isLoggedIn = box.get('status', defaultValue: false);
+
+  if (isLoggedIn ?? false) {
+    // User is already logged in, navigate to the home page
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const Landingpage()),
+      MaterialPageRoute(builder: (context) => bottomNavigationBar(userDetails: {},)),
+    );
+  } else {
+    // User is not logged in, navigate to the login page
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
     );
   }
+}
+
+
+
 }

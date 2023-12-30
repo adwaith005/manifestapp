@@ -4,12 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:themanifestapp/Screens/home.dart';
-import 'package:themanifestapp/Screens/login.dart';
 import 'package:themanifestapp/Screens/profile.dart';
 import 'package:themanifestapp/Screens/progress.dart';
+import 'package:themanifestapp/db/hivelogout.dart';
 
+// ignore: must_be_immutable
 class bottomNavigationBar extends StatefulWidget {
-  const bottomNavigationBar({super.key});
+  bottomNavigationBar({
+    String? batchNo,
+    String? email,
+    Key? key,
+    required Map<String, dynamic> userDetails,
+  })  : batchNo = batchNo,
+        email = email,
+        userDetails = userDetails,
+        super(key: key);
+
+  final String? batchNo;
+  final String? email;
+  final Map<String, dynamic> userDetails;
 
   @override
   State<bottomNavigationBar> createState() => _HomeState();
@@ -25,13 +38,13 @@ class _HomeState extends State<bottomNavigationBar> {
       key: _scaffoldKey,
       appBar: AppBar(
         elevation: 0.0,
-        backgroundColor: Colors.white,
+        backgroundColor: _currentIndex == 2 ? Colors.black : Colors.white,
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.menu,
-                color: Color(0xFF202628),
+                color: _currentIndex == 2 ? Colors.white : Color(0xFF202628),
               ),
               onPressed: () {
                 _scaffoldKey.currentState!.openDrawer();
@@ -45,7 +58,7 @@ class _HomeState extends State<bottomNavigationBar> {
           style: TextStyle(
             fontSize: 30,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: _currentIndex == 2 ? Colors.white : Color(0xFF202628),
             fontFamily: GoogleFonts.poppins().fontFamily,
           ),
         ),
@@ -60,8 +73,8 @@ class _HomeState extends State<bottomNavigationBar> {
           TabItem(icon: Icons.show_chart, title: 'Progress'),
           TabItem(icon: Icons.person, title: 'Profile'),
         ],
-        activeColor: Colors.black, // Color for the active icon
-        color: Colors.grey, // C
+        activeColor: Colors.black,
+        color: Colors.grey,
         initialActiveIndex: _currentIndex,
         onTap: (int index) {
           setState(() {
@@ -110,7 +123,10 @@ class _HomeState extends State<bottomNavigationBar> {
 }
 
 class Menudrawer extends StatelessWidget {
-  const Menudrawer({Key? key});
+  final String? batchNo;
+  final String? email;
+
+  const Menudrawer({Key? key, this.batchNo, this.email}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -123,14 +139,14 @@ class Menudrawer extends StatelessWidget {
               color: Color(0xFF202628),
             ),
             accountName: Text(
-              'User name',
+              'User name', // Replace with actual user name
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,
               ),
             ),
             accountEmail: Text(
-              'User@gmail.com',
+              'User@gmail.com', // Replace with actual user email
               style: TextStyle(
                 color: Colors.white,
               ),
@@ -150,18 +166,28 @@ class Menudrawer extends StatelessWidget {
               Navigator.pop(context);
             },
           ),
+          
+          // Additional ListTile for Profile
           ListTile(
-            leading: const Icon(
-              Icons.logout,
-              color: Colors.red,
+            leading: Icon(
+              Icons.person,
+              color: Colors.blue,
             ),
-            title: const Text(
-              'Logout',
-              style: TextStyle(color: Colors.red),
+            title: Text(
+              'Profile',
+              style: TextStyle(color: Colors.blue),
             ),
             onTap: () {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()));
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfileScreen(
+                    batchNo: batchNo,
+                    email: email,
+                  ),
+                ),
+              );
             },
           ),
         ],
