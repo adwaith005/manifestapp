@@ -11,6 +11,8 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Hive.initFlutter();
 
+  // Hive.openBox<Map<dynamic, dynamic>>('userDetails');
+
   runApp(const Myapp());
 }
 

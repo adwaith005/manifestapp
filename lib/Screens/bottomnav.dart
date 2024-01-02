@@ -3,32 +3,27 @@
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
 import 'package:themanifestapp/Screens/home.dart';
 import 'package:themanifestapp/Screens/profile.dart';
 import 'package:themanifestapp/Screens/progress.dart';
 import 'package:themanifestapp/db/hivelogout.dart';
 
-// ignore: must_be_immutable
-class bottomNavigationBar extends StatefulWidget {
-  bottomNavigationBar({
-    String? batchNo,
-    String? email,
+class MyBottomNavigationBar extends StatefulWidget {
+  MyBottomNavigationBar({
+    this.batchNo,
+    this.email,
     Key? key,
-    required Map<String, dynamic> userDetails,
-  })  : batchNo = batchNo,
-        email = email,
-        userDetails = userDetails,
-        super(key: key);
+  }) : super(key: key);
 
   final String? batchNo;
   final String? email;
-  final Map<String, dynamic> userDetails;
 
   @override
-  State<bottomNavigationBar> createState() => _HomeState();
+  _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<bottomNavigationBar> {
+class _HomeState extends State<MyBottomNavigationBar> {
   int _currentIndex = 0;
   String _appBarTitle = 'Home';
 
@@ -39,31 +34,21 @@ class _HomeState extends State<bottomNavigationBar> {
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: _currentIndex == 2 ? Colors.black : Colors.white,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: Icon(
-                Icons.menu,
-                color: _currentIndex == 2 ? Colors.white : Color(0xFF202628),
-              ),
-              onPressed: () {
-                _scaffoldKey.currentState!.openDrawer();
-              },
-            );
-          },
-        ),
         automaticallyImplyLeading: false,
         title: Text(
           _appBarTitle,
           style: TextStyle(
             fontSize: 30,
             fontWeight: FontWeight.bold,
-            color: _currentIndex == 2 ? Colors.white : Color(0xFF202628),
+            color: _currentIndex == 2 ? Colors.white : const Color(0xFF202628),
             fontFamily: GoogleFonts.poppins().fontFamily,
           ),
         ),
       ),
-      drawer: const Menudrawer(),
+      endDrawer: Container(
+        width: 217.0, // Set the width of the drawer
+        child: MenuDrawer(),
+      ),
       body: _getBody(_currentIndex),
       bottomNavigationBar: ConvexAppBar(
         elevation: 0,
@@ -91,11 +76,14 @@ class _HomeState extends State<bottomNavigationBar> {
   Widget _getBody(int currentIndex) {
     switch (currentIndex) {
       case 0:
-        return const HomeScreen();
+        return HomeScreen();
       case 1:
         return const ProgressScreen();
       case 2:
-        return const ProfileScreen();
+        return ProfileScreen(
+          batchNo: widget.batchNo,
+          email: widget.email,
+        );
       default:
         return Container();
     }
@@ -110,7 +98,7 @@ class _HomeState extends State<bottomNavigationBar> {
         break;
       case 1:
         setState(() {
-          _appBarTitle = 'Progress';
+          _appBarTitle = 'Statistics';
         });
         break;
       case 2:
@@ -122,72 +110,77 @@ class _HomeState extends State<bottomNavigationBar> {
   }
 }
 
-class Menudrawer extends StatelessWidget {
-  final String? batchNo;
-  final String? email;
+class MenuDrawer extends StatefulWidget {
+  const MenuDrawer({Key? key}) : super(key: key);
 
-  const Menudrawer({Key? key, this.batchNo, this.email}) : super(key: key);
+  @override
+  _MenuDrawerState createState() => _MenuDrawerState();
+}
 
+class _MenuDrawerState extends State<MenuDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          const UserAccountsDrawerHeader(
-            decoration: BoxDecoration(
-              color: Color(0xFF202628),
+         const  UserAccountsDrawerHeader(
+            decoration:  BoxDecoration(
+              color: Color(0xFF090B0B),
             ),
             accountName: Text(
-              'User name', // Replace with actual user name
-              style: TextStyle(
+              "name",
+              style:  TextStyle(
                 color: Colors.white,
-                fontSize: 18,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
               ),
             ),
-            accountEmail: Text(
-              'User@gmail.com', // Replace with actual user email
-              style: TextStyle(
-                color: Colors.white,
+            accountEmail:  Text(
+              "Domain",
+              style:  TextStyle(
+                color: Color(0xFF9C9C9C),
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
               ),
             ),
-            currentAccountPicture: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Icon(
-                Icons.person,
-                color: Colors.black,
-              ),
+            currentAccountPicture: const  CircleAvatar(
+              backgroundColor:  Color(0xFFD9D9D9),
+              radius: 50,
+              // child: Text(
+              //   userDetails['name']?.isNotEmpty == true
+              //       ? userDetails['name'][0]
+              //       : 'A',
+              //   style: const TextStyle(
+              //     fontSize: 20,
+              //     fontWeight: FontWeight.bold,
+              //     color: Color(0xFF8A7A7A),
+              //   ),
+              // ),
             ),
+          ),
+          const Spacer(),
+          ListTile(
+            leading: const Icon(
+              Icons.logout,
+              color: Colors.red,
+            ),
+            title: const Text(
+              'Logout',
+              style: TextStyle(color: Colors.red),
+            ),
+            onTap: () {
+              print('logoutbuttonpressed');
+              performLogout(context);
+              Hive.box('userDetails').clear();
+            },
           ),
           ListTile(
             leading: const Icon(Icons.help),
             title: const Text('About'),
             onTap: () {
               Navigator.pop(context);
-            },
-          ),
-          
-          // Additional ListTile for Profile
-          ListTile(
-            leading: Icon(
-              Icons.person,
-              color: Colors.blue,
-            ),
-            title: Text(
-              'Profile',
-              style: TextStyle(color: Colors.blue),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProfileScreen(
-                    batchNo: batchNo,
-                    email: email,
-                  ),
-                ),
-              );
             },
           ),
         ],

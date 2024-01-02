@@ -25,9 +25,11 @@ class _AddStudentState extends State<AddStudent> {
     'Mean',
     'Python (Django)',
     'Flutter',
-    'Go',
-    'Android Developing',
-    'Game Development'
+    'Golang',
+    'Kotin ',
+    'Game Development',
+    'Data Science',
+    'Cyber Security'
   ];
   String? selectedDomain;
 

@@ -50,7 +50,7 @@ Future<void> timetaking() async {
     // User is already logged in, navigate to the home page
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => bottomNavigationBar(userDetails: {},)),
+      MaterialPageRoute(builder: (context) => MyBottomNavigationBar()),
     );
   } else {
     // User is not logged in, navigate to the login page

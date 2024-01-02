@@ -40,6 +40,8 @@ class MyFirebaseDatabase {
         'phoneNumber': phoneNumber,
         'domain': domain,
         'password': password,
+        'batchNo':batchNo
+        
       });
       log("Student added successfully!");
     } catch (error) {

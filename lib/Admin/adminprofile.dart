@@ -26,13 +26,13 @@ class _AdminprofileState extends State<Adminprofile> {
             icon: const Icon(Icons.logout_outlined),
             color: Colors.red,
           ),
-          Center(
-            child: Image.asset(
-              'lib/images/person.png', // Change this to the path of your image
-              height: 180,
-              width: 150,
-            ),
-          ),
+          // Center(
+          //   child: Image.asset(
+          //     'lib/images/person.png', // Change this to the path of your image
+          //     height: 180,
+          //     width: 150,
+          //   ),
+          // ),
           const SizedBox(
             height: 30,
           ),

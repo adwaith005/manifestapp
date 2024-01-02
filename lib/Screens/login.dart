@@ -266,60 +266,66 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-onLogin() async {
-  try {
-    final batchNo = _batchnumberController.text.toString().trim();
-    final email = emailController.text.toString().trim();
-    final studentRef = FirebaseFirestore.instance
-        .collection('Batches')
-        .doc(batchNo)
-        .collection('students')
-        .doc(email);
-    final studentsnapshot = await studentRef.get();
+  onLogin() async {
+    try {
+      final batchNo = _batchnumberController.text.toString().trim();
+      final email = emailController.text.toString().trim();
+      final studentRef = FirebaseFirestore.instance
+          .collection('Batches')
+          .doc(batchNo)
+          .collection('students')
+          .doc(email);
+      final studentsnapshot = await studentRef.get();
 
-    if (studentsnapshot.exists) {
-      final studentData = studentsnapshot.data() as Map<String, dynamic>;
-      if (emailController.text == studentData['email'] &&
-          passwordController.text == studentData['password']) {
-        // Log user details to the console
-        log('User is logged in. User Details: $studentData');
+      if (studentsnapshot.exists) {
+        final studentData = studentsnapshot.data() as Map<String, dynamic>;
+        if (emailController.text == studentData['email'] &&
+            passwordController.text == studentData['password']) {
+          // Log user details to the console
+          log('User is logged in. User Details: $studentData');
+          await saveUserDetails(studentData);
 
-        // Set the login status in Hive
-        await Hive.box<bool>('isLoggedIn').put('status', true);
+          // Set the login status in Hive
+          await Hive.box<bool>('isLoggedIn').put('status', true);
 
-        // Navigate to the home screen
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => bottomNavigationBar(
-              batchNo: batchNo,
-              email: email,
-              userDetails: studentData,
+          // Navigate to the home screen
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MyBottomNavigationBar(
+                batchNo: batchNo,
+                email: email,
+           
+              ),
             ),
-          ),
-        );
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Invalid credentials. Please try again.'),
+            ),
+          );
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Invalid credentials. Please try again.'),
+            content: Text('User not found. Please check your details.'),
           ),
         );
       }
-    } else {
+    } catch (e) {
+      log('Error during login: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('User not found. Please check your details.'),
+          content: Text('An error occurred. Please try again.'),
         ),
       );
     }
-  } catch (e) {
-    log('Error during login: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('An error occurred. Please try again.'),
-      ),
-    );
   }
-}
 
+  Future<void> saveUserDetails(Map<dynamic, dynamic> userDetails) async {
+    final userBox = await Hive.openBox<Map<dynamic, dynamic>>('userDetails');
+    await userBox.add(userDetails);
+  print('User Details saved to Hive: $userDetails');
+  }
 }
