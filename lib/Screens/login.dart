@@ -1,11 +1,7 @@
-import 'dart:developer';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive/hive.dart';
 import 'package:themanifestapp/Admin/login.dart';
-import 'package:themanifestapp/Screens/bottomnav.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -22,6 +18,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -29,16 +27,21 @@ class _LoginScreenState extends State<LoginScreen> {
             top: 0,
             left: 0,
             right: 0,
-            bottom: MediaQuery.of(context).size.height / 3,
+            bottom: isSmallScreen
+                ? MediaQuery.of(context).size.height / 4
+                : MediaQuery.of(context).size.height / 3,
             child: Container(
               color: Colors.black,
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 110, right: 30),
+                    padding: EdgeInsets.only(
+                      top: isSmallScreen ? 110 : 110,
+                      right: isSmallScreen ? 60 : 30,
+                    ),
                     child: Image.asset(
                       'lib/images/manifestlogo.png',
-                      height: 80,
+                      height: isSmallScreen ? 50 : 80,
                     ),
                   )
                 ],
@@ -46,7 +49,9 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           Positioned(
-            top: MediaQuery.of(context).size.height / 4,
+            top: isSmallScreen
+                ? MediaQuery.of(context).size.height / 4.5
+                : MediaQuery.of(context).size.height / 4,
             left: 0,
             right: 0,
             bottom: 0,
@@ -55,8 +60,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40.0),
-                    topRight: Radius.circular(40.0),
+                    topLeft: Radius.circular(30.0),
+                    topRight: Radius.circular(30.0),
                   ),
                 ),
                 child: Form(
@@ -64,21 +69,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(left: 30, top: 60),
+                        padding: EdgeInsets.only(
+                          left: isSmallScreen ? 10 : 30,
+                          top: isSmallScreen ? 80 : 60,
+                        ),
                         child: Text(
                           'Hey, Welcome back to BROTOTYPE Manifest',
                           style: TextStyle(
-                            fontSize: 31,
-                            fontWeight: FontWeight.w700,
-                            fontFamily: GoogleFonts.poppins().fontFamily,
+                            fontSize: isSmallScreen ? 31 : 31,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: GoogleFonts.inter().fontFamily,
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        height: 30,
+                      SizedBox(
+                        height: isSmallScreen ? 10 : 30,
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(20.0),
+                        padding: EdgeInsets.all(isSmallScreen ? 10 : 20),
                         child: TextFormField(
                           controller: _batchnumberController,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -89,17 +97,19 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Colors.black,
                               fontFamily: GoogleFonts.poppins().fontFamily,
                             ),
-                            enabledBorder: const OutlineInputBorder(
+                            enabledBorder:const OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.black),
                             ),
                             focusedBorder: const OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.black),
                             ),
-                            errorBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.red),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.error),
                             ),
-                            focusedErrorBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.red),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.error),
                             ),
                           ),
                           style: TextStyle(
@@ -115,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(20.0),
+                        padding: EdgeInsets.all(isSmallScreen ? 10 : 20),
                         child: TextFormField(
                           controller: emailController,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -125,8 +135,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Colors.black,
                               fontFamily: GoogleFonts.poppins().fontFamily,
                             ),
-                            enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
+                            enabledBorder:  const  OutlineInputBorder(
+                              borderSide:  BorderSide(color: Colors.black),
                             ),
                             focusedBorder: const OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.black),
@@ -153,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(20.0),
+                        padding: EdgeInsets.all(isSmallScreen ? 10 : 20),
                         child: TextFormField(
                           controller: passwordController,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -164,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Colors.black,
                               fontFamily: GoogleFonts.poppins().fontFamily,
                             ),
-                            enabledBorder: const OutlineInputBorder(
+                            enabledBorder: const  OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.black),
                             ),
                             focusedBorder: const OutlineInputBorder(
@@ -192,10 +202,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       Container(
-                        width: 380,
-                        height: 60,
-                        padding: const EdgeInsets.all(10),
-                        margin: const EdgeInsets.only(top: 10),
+                        width: isSmallScreen ? 280 : 380,
+                        height: isSmallScreen ? 50 : 60,
+                        padding: EdgeInsets.all(isSmallScreen ? 5 : 10),
+                        margin: EdgeInsets.only(top: isSmallScreen ? 5 : 10),
                         decoration: BoxDecoration(
                           color: const Color(0xFF090B0B),
                           borderRadius: BorderRadius.circular(10),
@@ -204,9 +214,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {
                             if (_formKey.currentState != null &&
                                 _formKey.currentState!.validate()) {
-                              // ignore: avoid_print
+                              // Ignore: avoid_print
                               print('object clicked');
-                              onLogin();
+                              // onLogin();
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -215,15 +225,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Text(
                             'Login',
                             style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontFamily: GoogleFonts.poppins().fontFamily,
-                                fontWeight: FontWeight.bold),
+                              fontSize: isSmallScreen ? 14 : 16,
+                              color: Colors.white,
+                              fontFamily: GoogleFonts.poppins().fontFamily,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 50),
+                        padding: EdgeInsets.only(top: isSmallScreen ? 30 : 50),
                         child: GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -252,8 +263,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        height: 155,
+                       SizedBox(
+                        height: isSmallScreen ? 80 : 155,
                       )
                     ],
                   ),
@@ -265,67 +276,73 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
-  onLogin() async {
-    try {
-      final batchNo = _batchnumberController.text.toString().trim();
-      final email = emailController.text.toString().trim();
-      final studentRef = FirebaseFirestore.instance
-          .collection('Batches')
-          .doc(batchNo)
-          .collection('students')
-          .doc(email);
-      final studentsnapshot = await studentRef.get();
-
-      if (studentsnapshot.exists) {
-        final studentData = studentsnapshot.data() as Map<String, dynamic>;
-        if (emailController.text == studentData['email'] &&
-            passwordController.text == studentData['password']) {
-          // Log user details to the console
-          log('User is logged in. User Details: $studentData');
-          await saveUserDetails(studentData);
-
-          // Set the login status in Hive
-          await Hive.box<bool>('isLoggedIn').put('status', true);
-
-          // Navigate to the home screen
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MyBottomNavigationBar(
-                batchNo: batchNo,
-                email: email,
-           
-              ),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Invalid credentials. Please try again.'),
-            ),
-          );
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('User not found. Please check your details.'),
-          ),
-        );
-      }
-    } catch (e) {
-      log('Error during login: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('An error occurred. Please try again.'),
-        ),
-      );
-    }
-  }
-
-  Future<void> saveUserDetails(Map<dynamic, dynamic> userDetails) async {
-    final userBox = await Hive.openBox<Map<dynamic, dynamic>>('userDetails');
-    await userBox.add(userDetails);
-  print('User Details saved to Hive: $userDetails');
-  }
 }
+
+
+  // onLogin() async {
+  //   try {
+  //     final batchNo = _batchnumberController.text.trim();
+  //     final email = emailController.text.trim();
+  //     final studentRef = FirebaseFirestore.instance
+  //         .collection('Batches')
+  //         .doc(batchNo)
+  //         .collection('students')
+  //         .doc(email);
+  //     final studentsnapshot = await studentRef.get();
+
+  //     if (studentsnapshot.exists) {
+  //       final studentData = studentsnapshot.data();
+  //       if (studentData is Map<String, dynamic>) {
+  //         if (emailController.text == studentData['email'] &&
+  //             passwordController.text == studentData['password']) {
+  //           log('User is logged in. User Details: $studentData');
+  //           await saveUserDetails(studentData);
+  //           await Hive.box<bool>('isLoggedIn').put('status', true);
+
+  //           Navigator.push(
+  //             context,
+  //             MaterialPageRoute(
+  //               builder: (context) => MyBottomNavigationBar(
+  //                 batchNo: batchNo,
+  //                 email: email,
+  //                 userDetails: studentData,
+  //               ),
+  //             ),
+  //           );
+  //         } else {
+  //           ScaffoldMessenger.of(context).showSnackBar(
+  //             const SnackBar(
+  //               content: Text('Invalid credentials. Please try again.'),
+  //             ),
+  //           );
+  //         }
+  //       } else {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(
+  //             content: Text('Invalid data format. Please try again.'),
+  //           ),
+  //         );
+  //       }
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(
+  //           content: Text('User not found. Please check your details.'),
+  //         ),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     log('Error during login: $e');
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(
+  //         content: Text('An error occurred. Please try again.'),
+  //       ),
+  //     );
+  //   }
+  // }
+
+  // Future<void> saveUserDetails(Map<String, dynamic> userDetails) async {
+  //   final userBox = Hive.box<Map<String, dynamic>>('userDetails');
+  //   await userBox.put('userDetails', userDetails);
+  //   print('User Details saved to Hive: $userDetails');
+  // }
+

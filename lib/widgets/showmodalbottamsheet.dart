@@ -74,8 +74,8 @@ class ShowModalBottomSheet {
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
                           String batchNo = batchController.text;
-
-                          firebaseDatabase.addBatch(batchNo, batchNo);
+                          print('saving the batch');
+                          firebaseDatabase.addBatch(batchNo);
 
                           Navigator.pop(context);
                         }
@@ -91,4 +91,10 @@ class ShowModalBottomSheet {
       },
     );
   }
+  
+  
+  
+  
+  
+  
 }

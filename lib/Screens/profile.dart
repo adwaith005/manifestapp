@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
@@ -17,22 +16,34 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  Map<dynamic,dynamic>? thisUser ;
-
-
+  Map<String, dynamic>? currentUser; // Change the type to Map<String, dynamic>?
+  @override
   @override
   void initState() {
     super.initState();
-    var userbox = Hive.box<Map<dynamic, dynamic>>("userDetails");
-    var user = userbox.values.first;
-    thisUser = user;
-    print(user['password']);
+    final userBox = Hive.box<Map<String, dynamic>>('userDetails');
+    currentUser = userBox.get('userDetails');
+
+    if (currentUser != null) {
+      // Print individual properties for debugging
+      print("Name: ${currentUser?['name']}");
+      print("Domain: ${currentUser?['domain']}");
+      print("BatchNo: ${currentUser?['batchNo']}");
+      print("Email: ${currentUser?['email']}");
+      print("PhoneNumber: ${currentUser?['phoneNumber']}");
+    } else {
+      print("User details not found in Hive.");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-
-
+    String name = currentUser?['name'] ?? 'N/A';
+    String domain = currentUser?['domain'] ?? 'N/A';
+    String batch = currentUser?['batchNo'] ?? 'N/A';
+    String email = currentUser?['email'] ?? 'N/A';
+    String phoneNo = currentUser?['phoneNumber'] ?? 'N/A';
+    savetoHive();
     return Scaffold(
       body: Stack(
         children: [
@@ -46,7 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 6, right: 30),
+                    padding: const EdgeInsets.only(top: 2, right: 30),
                     child: Center(
                       child: Column(
                         children: [
@@ -54,10 +65,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             padding: const EdgeInsets.only(left: 30),
                             child: CircleAvatar(
                               backgroundColor: const Color(0xFF3B4447),
-                              radius: 80,
+                              radius: 70,
                               child: Center(
                                 child: Text(
-                                  thisUser?['name'],
+                                  name.isNotEmpty ? name[0] : 'A',
                                   style: const TextStyle(
                                     fontSize: 40,
                                     fontWeight: FontWeight.bold,
@@ -69,21 +80,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           const SizedBox(height: 10),
                           Padding(
-                            padding:  EdgeInsets.only(left: 30),
+                            padding: const EdgeInsets.only(left: 30),
                             child: Text(
-                              thisUser?['name'],
-                              style:  TextStyle(
+                              name,
+                              style: const TextStyle(
                                 fontSize: 25,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
                             ),
                           ),
-                        const  Padding(
-                            padding:  EdgeInsets.only(left: 30),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 30),
                             child: Text(
-                              "domain",
-                              style:  TextStyle(
+                              domain,
+                              style: const TextStyle(
                                 fontSize: 25,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey,
@@ -119,7 +130,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                         thisUser?['name'],
+                        'Batch: "$batch"',
                         style: const TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
@@ -127,23 +138,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       const SizedBox(height: 5),
-                      // Text(
-                      //   'Email: $email',
-                      //   style: const TextStyle(
-                      //     fontSize: 18,
-                      //     fontWeight: FontWeight.bold,
-                      //     color: Colors.grey,
-                      //   ),
-                      // ),
-                      // const SizedBox(height: 5),
-                      // Text(
-                      //   'Phone no: $phoneNo',
-                      //   style: const TextStyle(
-                      //     fontSize: 18,
-                      //     fontWeight: FontWeight.bold,
-                      //     color: Colors.grey,
-                      //   ),
-                      // ),
+                      Text(
+                        'Email: $email',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        'Phone no: $phoneNo',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -154,23 +165,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+}
 
-  //    Future<void> loadUserDetails() async {
-  //   try {
-  //     final userBox = await Hive.openBox<Map<String, dynamic>>('userDetails');
-  //     final userDetails = userBox.get('userDetails');
-
-  //     if (userDetails != null) {
-  //       setState(() {
-  //         name = userDetails['name'] ?? '';
-  //         domain = userDetails['domain'] ?? '';
-  //         email = userDetails['email'] ?? '';
-  //         batchNo = userDetails['batchNo'] ?? '';
-  //         phoneNo = userDetails['phoneNo'] ?? '';
-  //       });
-  //     }
-  //   } catch (e) {
-  //     print('Error loading user details: $e');
-  //   }
-  // }
+Future<void> savetoHive() async {
+  final userBox = Hive.box<Map<String, dynamic>>('userDetails');
+  final storedDetails = userBox.get('userDetails');
+  print('User Details in Hive: $storedDetails');
 }

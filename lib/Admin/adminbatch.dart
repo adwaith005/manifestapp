@@ -1,106 +1,217 @@
-import 'dart:developer';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:themanifestapp/Admin/addstudents.dart';
 import 'package:themanifestapp/Admin/studentlist.dart';
 import 'package:themanifestapp/db/firebasedatabase.dart';
+import 'package:themanifestapp/widgets/noofstudent.dart';
 import 'package:themanifestapp/widgets/search.dart';
 import 'package:themanifestapp/widgets/showmodalbottamsheet.dart';
 
 class Batches extends StatefulWidget {
-  const Batches({Key? key}) : super(key: key);
+  const Batches({
+    Key? key,
+  }) : super(key: key);
 
   @override
-  State<Batches> createState() => _AdminhomeState();
+  State<Batches> createState() => _BatchesState();
 }
 
-class _AdminhomeState extends State<Batches> {
+class _BatchesState extends State<Batches> {
   final MyFirebaseDatabase _firebaseDatabase = MyFirebaseDatabase();
   final _formKey = GlobalKey<FormState>();
-  void _showModalBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return ListView(
-          shrinkWrap: true,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Create Batch'),
-              onTap: () {
-                ShowModalBottomSheet.show(context, _formKey, _firebaseDatabase);
-                ();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.add),
-              title: const Text('Add Student'),
-              onTap: () {
-                // Handle the action for adding a student
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AddStudent()),
-                );
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  String _searchTerm = ''; // Store the search term here
+  String searchTerm = '';
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         backgroundColor: const Color(0xFFF4F6F6),
-        body: Column(
-          children: [
-            // Searchbar
-            Searchbar(
-              onSearchChanged: (value) =>
-                  setState(() => _searchTerm = value.toLowerCase()),
+        body: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Searchbar(
+                onSearchChanged: (value) =>
+                    setState(() => searchTerm = value.toLowerCase()),
+              ),
             ),
-            const SizedBox(
-              height: 20,
-            ),
-            StreamBuilder<QuerySnapshot>(
-              stream: _firebaseDatabase.getBatchesStream(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  log('data found');
-                  final documents = snapshot.data!.docs;
-                  final filteredDocuments = documents
-                      .where((doc) =>
-                          doc['batchName'].toLowerCase().contains(_searchTerm))
-                      .toList(); // Filter batch names based on search
+            StreamBuilder(
+              stream:
+                  FirebaseFirestore.instance.collection('Batches').snapshots(),
+              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return SliverToBoxAdapter(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                }
 
-                  return Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10, right: 10),
-                      child: GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 5.0,
-                          mainAxisSpacing: 0.0,
-                        ),
-                        itemCount: filteredDocuments.length,
-                        itemBuilder: (context, index) {
-                          return _buildBatchBox(filteredDocuments, index);
-                        },
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SliverToBoxAdapter(
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.black,
                       ),
                     ),
                   );
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else {
-                  return const Center(child: CircularProgressIndicator());
                 }
+
+                List<Widget> batchWidgets = [];
+
+                for (var document in snapshot.data!.docs) {
+                  Map<String, dynamic> data =
+                      document.data() as Map<String, dynamic>;
+
+                  // Check if the batch matches the search term
+                  if (searchTerm.isEmpty ||
+                      data['batch'].toLowerCase().contains(searchTerm)) {
+                    batchWidgets.add(
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => StudentList(
+                                  batchNo: data['batch'] ?? 'Default Batch'),
+                            ),
+                          );
+                        },
+                        child: GestureDetector(
+                           onLongPress: () => _showDeleteDialog(data['batch']),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: Container(
+                              margin:
+                                  const EdgeInsets.only(right: 0, bottom: 0),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFEFEFEF),
+                                borderRadius: BorderRadius.circular(5.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 1,
+                                    blurRadius: 5,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 2.0),
+                                  title: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Center(
+                                          child: Text(
+                                            'Batch',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 20,
+                                              fontFamily: GoogleFonts.poppins()
+                                                  .fontFamily,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 3),
+                                        Center(
+                                          child: Text(
+                                            data['batch'] ?? 'Default Batch',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 30,
+                                              fontFamily: GoogleFonts.poppins()
+                                                  .fontFamily,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            FutureBuilder<int>(
+                                              future: getNumberOfStudents(
+                                                  data['batch']),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.connectionState ==
+                                                    ConnectionState.waiting) {
+                                                  return const Text(
+                                                    'Loading...',
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.black,
+                                                    ),
+                                                  );
+                                                } else if (snapshot.hasError) {
+                                                  return const Text(
+                                                    'Error',
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.red,
+                                                    ),
+                                                  );
+                                                } else {
+                                                  return Container(
+                                                    width: 166,
+                                                    height: 30,
+                                                    decoration:
+                                                        const BoxDecoration(
+                                                      color: Color(0xFF777777),
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                        bottomLeft:
+                                                            Radius.circular(4),
+                                                        bottomRight:
+                                                            Radius.circular(4),
+                                                      ),
+                                                    ),
+                                                    child: Center(
+                                                      child: Text(
+                                                        '${snapshot.data} Students',
+                                                        style: const TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ])),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                }
+
+                return SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 0.0,
+                      mainAxisSpacing: 10.0,
+                      childAspectRatio: 3 / 2),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      return batchWidgets[index];
+                    },
+                    childCount: batchWidgets.length,
+                  ),
+                );
               },
             ),
           ],
@@ -108,7 +219,6 @@ class _AdminhomeState extends State<Batches> {
         floatingActionButton: FloatingActionButton(
           backgroundColor: const Color(0xFF202628),
           onPressed: () {
-            debugPrint('pressed');
             _showModalBottomSheet();
           },
           shape: const CircleBorder(
@@ -124,134 +234,60 @@ class _AdminhomeState extends State<Batches> {
     );
   }
 
-  Widget _buildBatchBox(List<QueryDocumentSnapshot> documents, int index) {
-    final batchNo = documents[index].id;
-    final batchRef = documents[index].reference;
+  void _showModalBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return ListView(
+          shrinkWrap: true,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Create Batch'),
+              onTap: () {
+                ShowModalBottomSheet.show(context, _formKey, _firebaseDatabase);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.add),
+              title: const Text('Add Student'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AddStudent()),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-    return Container(
-      margin: const EdgeInsets.only(
-        left: 10,
-        top: 36,
-      ),
-      decoration: BoxDecoration(
-        color: const Color(0xFFEFEFEF),
-        borderRadius: BorderRadius.circular(5.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: SingleChildScrollView(
-        child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 5.0),
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Text(
-                  'Batch',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontFamily: GoogleFonts.poppins().fontFamily,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 3),
-              Center(
-                child: Text(
-                  batchNo,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 30,
-                    fontFamily: GoogleFonts.poppins().fontFamily,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              FutureBuilder<QuerySnapshot>(
-                future: batchRef.collection('students').get(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final students = snapshot.data!.docs;
-                    int numberOfStudents =
-                        students.length > 10 ? 10 : students.length;
-
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '$numberOfStudents Students',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    );
-                  } else {
-                    return const CircularProgressIndicator();
-                  }
-                },
-              ),
-            ],
-          ),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => StudentList(
-                  batchRef: batchRef,
-                ),
-              ),
-            );
-          },
-          onLongPress: () async {
-            // This will be called when the user long-presses the ListTile
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: const Text('Delete Batch'),
-                content: Text(
-                  'Are you sure you want to delete batch $batchNo? This action cannot be undone.',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w200,
-                    fontFamily: GoogleFonts.inter().fontFamily,
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () async {
-                      await _firebaseDatabase.deleteBatch(batchRef);
-                      // ignore: use_build_context_synchronously
-                      Navigator.pop(context);
-                      setState(() {}); // Refresh the view after deletion
-                    },
-                    child: const Text('Delete',
-                        style: TextStyle(color: Colors.red)),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
+  void _showDeleteDialog(String batchNo) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Deletion'),
+          content: Text('Do you want to delete the batch $batchNo?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                await _firebaseDatabase.deleteBatch(batchNo);
+                Navigator.pop(context); // Close the dialog
+              },
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

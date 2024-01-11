@@ -16,32 +16,35 @@ class _AdminLoginFormState extends State<AdminLoginForm> {
 
   @override
   Widget build(BuildContext context) {
+    bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+
     return Form(
       key: _formKey,
       child: Column(
         children: [
-          SizedBox(
-            height: 60,
-          ),
           Padding(
-            padding: const EdgeInsets.only(left: 40, top: 60),
+            padding: EdgeInsets.only(
+              left: isSmallScreen ? 10 : 40,
+              top: isSmallScreen ? 80 : 60,
+            ),
             child: Text(
               'Hey, Welcome back to BROTOTYPE Manifest',
               style: TextStyle(
-                fontSize: 31,
-                fontWeight: FontWeight.w700,
-                fontFamily: GoogleFonts.poppins().fontFamily,
+                fontSize: isSmallScreen ? 31 : 31,
+                fontWeight: FontWeight.bold,
+                fontFamily: GoogleFonts.inter().fontFamily,
                 color: Colors.white,
               ),
             ),
           ),
-          const SizedBox(
-            height: 50,
+          SizedBox(
+            height: isSmallScreen ? 20 : 50,
           ),
           Padding(
             padding: const EdgeInsets.all(20.0),
             child: TextFormField(
               controller: emailController,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               decoration: InputDecoration(
                 labelText: 'Enter Name or phone no:',
                 labelStyle: TextStyle(
@@ -85,6 +88,7 @@ class _AdminLoginFormState extends State<AdminLoginForm> {
             padding: const EdgeInsets.all(20.0),
             child: TextFormField(
               controller: passwordController,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               obscureText: true,
               decoration: InputDecoration(
                 labelText: 'Enter Password :',
@@ -126,9 +130,9 @@ class _AdminLoginFormState extends State<AdminLoginForm> {
             ),
           ),
           Container(
-            width: 380,
-            height: 60,
-            padding: const EdgeInsets.all(5),
+            width: isSmallScreen ? 280 : 380,
+            height: isSmallScreen ? 50 : 60,
+            padding: EdgeInsets.all(isSmallScreen ? 5 : 10),
             margin: const EdgeInsets.only(top: 10),
             decoration: BoxDecoration(
               color: const Color(0xFF090B0B),
@@ -142,7 +146,7 @@ class _AdminLoginFormState extends State<AdminLoginForm> {
 
                 if (_formKey.currentState != null &&
                     _formKey.currentState!.validate()) {
-                  if ((emailController.text == 'admin' ||
+                  if ((emailController.text.trim() == 'admin' ||
                           emailController.text == '0987654321') &&
                       passwordController.text == 'asdf') {
                     // Successful login
@@ -166,7 +170,7 @@ class _AdminLoginFormState extends State<AdminLoginForm> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
               ),
-              child:  Text(
+              child: Text(
                 'Login',
                 style: TextStyle(
                   fontSize: 16,
@@ -178,7 +182,7 @@ class _AdminLoginFormState extends State<AdminLoginForm> {
             ),
           ),
           SizedBox(
-            height: 155,
+            height: isSmallScreen ? 170 : 155,
           )
         ],
       ),

@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:themanifestapp/db/firebasedatabase.dart';
@@ -316,6 +316,9 @@ class _AddStudentState extends State<AddStudent> {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a password';
                         }
+                        if (value.length < 6) {
+                          return 'Password must contain at least 6 characters';
+                        }
                         return null;
                       },
                     ),
@@ -372,55 +375,24 @@ class _AddStudentState extends State<AddStudent> {
                         String domain = selectedDomain ?? '';
                         String password = _passwordController.text;
 
-                        // Check if the user already exists with the provided phone number or email
-                        bool userExists = await checkIfUserExists(
-                            batchNo, phoneNumber, email);
-
-                        if (userExists) {
-                          // Show an error message or handle the case where the user already exists
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'User with the provided phone number or email already exists.',
-                                style: TextStyle(color: Colors.red),
-                              ),
-                            ),
-                          );
-                          _nameController.clear();
-                          _emailController.clear();
-                          _phonenumberController.clear();
-                          _batchnumberController.clear();
-                          _passwordController.clear();
-                          _confirmpasswordController.clear();
-                          // Reset the selected domain
-                          setState(() {
-                            selectedDomain = null;
-                          });
-                        } else {
-                          // Instantiate your Firebase class
-                          MyFirebaseDatabase firebaseDatabase =
-                              MyFirebaseDatabase();
-
-                          // Add the batch if it doesn't exist
-                          await firebaseDatabase.addBatch(
-                              batchNo, "Batch $batchNo");
-
-                          // Add the student to the batch
-                          await firebaseDatabase.addStudent(
+                        MyFirebaseDatabase firebaseDatabase =
+                            MyFirebaseDatabase();
+                        final userCredential = await FirebaseAuth.instance
+                            .createUserWithEmailAndPassword(
+                                email: email, password: password);
+                        await firebaseDatabase.addStudent(
                             batchNo: batchNo,
                             name: name,
                             email: email,
                             phoneNumber: phoneNumber,
                             domain: domain,
                             password: password,
-                            // Add the download URL here
-                          );
-
-                          // After saving, you may want to navigate back to the StudentList
-                          Navigator.pop(context);
-                        }
+                            currentUserId: userCredential.user!.uid);
+                        print('Succesfully added ');
+                        // After saving, you may want to navigate back to the StudentList
+                        Navigator.pop(context);
                       }
-                    }, // <-- Add a comma here
+                    }, 
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
                         const Color(0xFF202628),
@@ -456,31 +428,5 @@ class _AddStudentState extends State<AddStudent> {
   bool isFirstLetterCaps(String value) {
     // Check if the first letter is in uppercase
     return value.isNotEmpty && value[0] == value[0].toUpperCase();
-  }
-
-  Future<bool> checkIfUserExists(
-      String batchNo, String phoneNumber, String email) async {
-    var querySnapshot = await FirebaseFirestore.instance
-        .collection('Batches') // Replace 'Batches' with your collection name
-        .doc(batchNo)
-        .collection('students')
-        .where('phoneNumber', isEqualTo: phoneNumber)
-        .get();
-
-    // Check if there is any document with the provided phone number
-    if (querySnapshot.docs.isNotEmpty) {
-      return true;
-    }
-
-    // If no user found with the phone number, check with the email
-    querySnapshot = await FirebaseFirestore.instance
-        .collection('Batches') // Replace 'Batches' with your collection name
-        .doc(batchNo)
-        .collection('students')
-        .where('email', isEqualTo: email)
-        .get();
-
-    // Check if there is any document with the provided email
-    return querySnapshot.docs.isNotEmpty;
   }
 }

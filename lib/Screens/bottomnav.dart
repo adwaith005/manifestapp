@@ -14,10 +14,12 @@ class MyBottomNavigationBar extends StatefulWidget {
     this.batchNo,
     this.email,
     Key? key,
+    required this.userDetails,
   }) : super(key: key);
 
   final String? batchNo;
   final String? email;
+  final Map<String, dynamic> userDetails;
 
   @override
   _HomeState createState() => _HomeState();
@@ -47,7 +49,7 @@ class _HomeState extends State<MyBottomNavigationBar> {
       ),
       endDrawer: Container(
         width: 217.0, // Set the width of the drawer
-        child: MenuDrawer(),
+        child: MenuDrawer(userDetails: widget.userDetails),
       ),
       body: _getBody(_currentIndex),
       bottomNavigationBar: ConvexAppBar(
@@ -76,13 +78,14 @@ class _HomeState extends State<MyBottomNavigationBar> {
   Widget _getBody(int currentIndex) {
     switch (currentIndex) {
       case 0:
-        return HomeScreen();
+        return HomeScreen(userDetails: widget.userDetails);
       case 1:
         return const ProgressScreen();
       case 2:
         return ProfileScreen(
           batchNo: widget.batchNo,
           email: widget.email,
+          
         );
       default:
         return Container();
@@ -98,7 +101,7 @@ class _HomeState extends State<MyBottomNavigationBar> {
         break;
       case 1:
         setState(() {
-          _appBarTitle = 'Statistics';
+          _appBarTitle = 'Progress';
         });
         break;
       case 2:
@@ -110,54 +113,52 @@ class _HomeState extends State<MyBottomNavigationBar> {
   }
 }
 
-class MenuDrawer extends StatefulWidget {
-  const MenuDrawer({Key? key}) : super(key: key);
+class MenuDrawer extends StatelessWidget {
+  final Map<String, dynamic> userDetails;
 
-  @override
-  _MenuDrawerState createState() => _MenuDrawerState();
-}
+  const MenuDrawer({Key? key, required this.userDetails}) : super(key: key);
 
-class _MenuDrawerState extends State<MenuDrawer> {
   @override
   Widget build(BuildContext context) {
+    String studentName = userDetails['name'] ?? 'N/A';
+    String domain = userDetails['domain'] ?? 'N/A';
+
     return Drawer(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-         const  UserAccountsDrawerHeader(
-            decoration:  BoxDecoration(
+          UserAccountsDrawerHeader(
+            decoration: const BoxDecoration(
               color: Color(0xFF090B0B),
             ),
             accountName: Text(
-              "name",
-              style:  TextStyle(
+              studentName,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
               ),
             ),
-            accountEmail:  Text(
-              "Domain",
-              style:  TextStyle(
+            accountEmail: Text(
+              domain,
+              style: const TextStyle(
                 color: Color(0xFF9C9C9C),
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
               ),
             ),
-            currentAccountPicture: const  CircleAvatar(
-              backgroundColor:  Color(0xFFD9D9D9),
+            currentAccountPicture: CircleAvatar(
+              backgroundColor: const Color(0xFFD9D9D9),
               radius: 50,
-              // child: Text(
-              //   userDetails['name']?.isNotEmpty == true
-              //       ? userDetails['name'][0]
-              //       : 'A',
-              //   style: const TextStyle(
-              //     fontSize: 20,
-              //     fontWeight: FontWeight.bold,
-              //     color: Color(0xFF8A7A7A),
-              //   ),
-              // ),
+              child: Text(
+                studentName.isNotEmpty ? studentName[0] : 'A',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF8A7A7A),
+                ),
+              ),
             ),
           ),
           const Spacer(),
@@ -170,10 +171,11 @@ class _MenuDrawerState extends State<MenuDrawer> {
               'Logout',
               style: TextStyle(color: Colors.red),
             ),
-            onTap: () {
+            onTap: () async {
               print('logoutbuttonpressed');
               performLogout(context);
-              Hive.box('userDetails').clear();
+                await Hive.box('userDetails').close();
+
             },
           ),
           ListTile(

@@ -11,46 +11,53 @@ class Adminlogin extends StatefulWidget {
 class _AdminloginState extends State<Adminlogin> {
   @override
   Widget build(BuildContext context) {
+    bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+
     return Scaffold(
       body: Stack(
         children: [
-
           Positioned(
             top: 0,
             left: 0,
             right: 0,
-            bottom: MediaQuery.of(context).size.height / 3,
+            bottom: isSmallScreen
+                ? MediaQuery.of(context).size.height / 4
+                : MediaQuery.of(context).size.height / 3,
             child: Container(
               color: Colors.white,
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 120, right: 30),
+                    padding: EdgeInsets.only(
+                      top: isSmallScreen ? 110 : 80,
+                      right: isSmallScreen ? 60 : 80,
+                    ),
                     child: Image.asset(
                       'lib/images/logoin.png',
-                      height: 80,
+                      height: isSmallScreen ? 50 : 80,
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
           ),
-
           Positioned(
-            top: MediaQuery.of(context).size.height / 4,
+            top: isSmallScreen
+                ? MediaQuery.of(context).size.height / 4.5
+                : MediaQuery.of(context).size.height / 4,
             left: 0,
             right: 0,
             bottom: 0,
             child: SingleChildScrollView(
               child: Container(
-                decoration: const BoxDecoration(
+                decoration: const  BoxDecoration(
                   color: Colors.black,
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40.0),
-                    topRight: Radius.circular(40.0),
+                    topLeft: Radius.circular(30.0),
+                    topRight: Radius.circular(30.0),
                   ),
                 ),
-                child: const AdminLoginForm(),
+                child: const  AdminLoginForm(),
               ),
             ),
           ),

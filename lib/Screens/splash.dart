@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:themanifestapp/Screens/bottomnav.dart';
-import 'package:themanifestapp/Screens/login.dart';
+import 'package:themanifestapp/Screens/landingpage.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -50,13 +50,13 @@ Future<void> timetaking() async {
     // User is already logged in, navigate to the home page
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => MyBottomNavigationBar()),
+      MaterialPageRoute(builder: (context) => MyBottomNavigationBar(userDetails: {},)),
     );
   } else {
     // User is not logged in, navigate to the login page
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      MaterialPageRoute(builder: (context) => const Landingpage()),
     );
   }
 }
