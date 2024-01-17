@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:themanifestapp/Admin/addstudents.dart';
 import 'package:themanifestapp/Admin/studentlist.dart';
@@ -61,7 +62,6 @@ class _BatchesState extends State<Batches> {
                   Map<String, dynamic> data =
                       document.data() as Map<String, dynamic>;
 
-                  // Check if the batch matches the search term
                   if (searchTerm.isEmpty ||
                       data['batch'].toLowerCase().contains(searchTerm)) {
                     batchWidgets.add(
@@ -76,12 +76,11 @@ class _BatchesState extends State<Batches> {
                           );
                         },
                         child: GestureDetector(
-                           onLongPress: () => _showDeleteDialog(data['batch']),
+                          onLongPress: () => _showDeleteDialog(data['batch']),
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 10),
+                            padding: const EdgeInsets.only(left: 5, right: 2),
                             child: Container(
-                              margin:
-                                  const EdgeInsets.only(right: 0, bottom: 0),
+                              margin: const EdgeInsets.only(bottom: 0),
                               decoration: BoxDecoration(
                                 color: const Color(0xFFEFEFEF),
                                 borderRadius: BorderRadius.circular(5.0),
@@ -164,7 +163,7 @@ class _BatchesState extends State<Batches> {
                                                     height: 30,
                                                     decoration:
                                                         const BoxDecoration(
-                                                      color: Color(0xFF777777),
+                                                      color: Color(0xFF090B0B),
                                                       borderRadius:
                                                           BorderRadius.only(
                                                         bottomLeft:
@@ -202,7 +201,7 @@ class _BatchesState extends State<Batches> {
                 return SliverGrid(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      crossAxisSpacing: 0.0,
+                      crossAxisSpacing: 5.0,
                       mainAxisSpacing: 10.0,
                       childAspectRatio: 3 / 2),
                   delegate: SliverChildBuilderDelegate(
@@ -216,18 +215,45 @@ class _BatchesState extends State<Batches> {
             ),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: const Color(0xFF202628),
-          onPressed: () {
-            _showModalBottomSheet();
-          },
-          shape: const CircleBorder(
-            side: BorderSide(color: Colors.white, width: 2.0),
-          ),
-          child: const Icon(
-            Icons.add,
-            color: Colors.white,
-          ),
+        floatingActionButton: SpeedDial(
+          backgroundColor: Colors.black,
+          animatedIcon: AnimatedIcons.menu_close,
+          animatedIconTheme:
+              const IconThemeData(size: 22.0, color: Colors.white),
+          visible: true,
+          curve: Curves.decelerate,
+          spaceBetweenChildren: 12,
+          children: [
+            SpeedDialChild(
+              child: const Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
+              backgroundColor: const Color(0xFF202628),
+              label: 'Create Batch',
+              labelStyle: const TextStyle(fontSize: 16.0),
+              labelBackgroundColor: Colors.white,
+              onTap: () {
+                ShowModalBottomSheet.show(context, _formKey, _firebaseDatabase);
+              },
+            ),
+            SpeedDialChild(
+              child: const Icon(
+                Icons.person,
+                color: Colors.white,
+              ),
+              backgroundColor: const Color(0xFF202628),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AddStudent()),
+                );
+              },
+              label: 'Add Student',
+              labelStyle: TextStyle(fontSize: 16.0),
+              labelBackgroundColor: Colors.white,
+            ),
+          ],
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
@@ -249,14 +275,12 @@ class _BatchesState extends State<Batches> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.add),
+              leading: const Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
               title: const Text('Add Student'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AddStudent()),
-                );
-              },
+              onTap: () {},
             ),
           ],
         );
@@ -274,14 +298,14 @@ class _BatchesState extends State<Batches> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Close the dialog
+                Navigator.pop(context);
               },
               child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () async {
                 await _firebaseDatabase.deleteBatch(batchNo);
-                Navigator.pop(context); // Close the dialog
+                Navigator.pop(context);
               },
               child: const Text('Delete'),
             ),

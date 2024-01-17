@@ -89,18 +89,15 @@ class MyFirebaseDatabase {
 
   Future<void> deleteBatch(String batchNo) async {
     try {
-      // Fetch the list of students in the batch
       DocumentSnapshot batchSnapshot =
           await _firestore.collection("Batches").doc(batchNo).get();
       List<String> students =
           List<String>.from(batchSnapshot['students'] ?? []);
 
-      // Delete each student and associated Firebase Authentication user
       for (String studentId in students) {
         await _deleteStudent(studentId);
       }
 
-      // Delete the batch
       await _firestore.collection("Batches").doc(batchNo).delete();
       log("Batch deleted: $batchNo");
     } catch (error) {
@@ -123,5 +120,15 @@ class MyFirebaseDatabase {
     } catch (error) {
       log("Error deleting student: $error");
     }
+  }
+
+  static Future<void> deleteStudent(String studentId, String batchNo) async {
+    await FirebaseFirestore.instance
+        .collection('students')
+        .doc(studentId)
+        .delete();
+    await FirebaseFirestore.instance.collection('Batches').doc(batchNo).update({
+      'students': FieldValue.arrayRemove([studentId]),
+    });
   }
 }

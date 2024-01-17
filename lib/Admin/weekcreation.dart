@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:themanifestapp/widgets/dialog_helpers.dart' as dialogHelpers;
 import 'package:themanifestapp/widgets/showedit.dart';
-import 'package:themanifestapp/widgets/weekcreation.dart';
+import 'package:themanifestapp/widgets/weektile.dart';
 
 class WeekCreationPage extends StatelessWidget {
+  final String studentId;
   final String studentName;
+  final String weekNumber;
 
   const WeekCreationPage({
     Key? key,
+    required this.studentId,
     required this.studentName,
+    required this.weekNumber,
   }) : super(key: key);
 
   @override
@@ -24,20 +30,14 @@ class WeekCreationPage extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            var studentData = (snapshot.data as QuerySnapshot?)?.docs;
+            var studentData = (snapshot.data)?.docs;
             if (studentData != null && studentData.isNotEmpty) {
-              var studentDomain =
-                  (studentData[0].data() as Map<String, dynamic>?)?['domain'];
-
-              // Extracting student information
+              var studentDomain = (studentData[0].data())['domain'];
               String studentId = studentData[0].id;
-              String currentName =
-                  (studentData[0].data() as Map<String, dynamic>)['name'];
-              String currentPhoneNumber = (studentData[0].data()
-                  as Map<String, dynamic>)['phoneNumber'];
-              String currentPassword =
-                  (studentData[0].data() as Map<String, dynamic>)['password'];
-
+              String currentName = (studentData[0].data())['name'];
+              String currentPhoneNumber =
+                  (studentData[0].data())['phoneNumber'];
+              String currentPassword = (studentData[0].data())['password'];
               return Stack(
                 children: [
                   Positioned(
@@ -76,8 +76,8 @@ class WeekCreationPage extends StatelessWidget {
                                   ),
                                   onSelected: (value) {
                                     if (value == 'edit') {
+                                      // ignore: avoid_print
                                       print('Edit pressed for $studentName');
-                                      // Passing student information to the edit dialog
                                       showEditDialog(
                                         context,
                                         studentId,
@@ -154,22 +154,88 @@ class WeekCreationPage extends StatelessWidget {
                           color: Colors.white,
                           borderRadius: BorderRadius.only(),
                         ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 16, right: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              StreamBuilder(
+                                stream: FirebaseFirestore.instance
+                                    .collection("students")
+                                    .doc(studentId)
+                                    .collection('weeks')
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    var weekData = (snapshot.data)?.docs;
+                                    if (weekData != null &&
+                                        weekData.isNotEmpty) {
+                                      return GridView.builder(
+                                        gridDelegate:
+                                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount: 2,
+                                                crossAxisSpacing: 20.0,
+                                                mainAxisSpacing: 20.0,
+                                                childAspectRatio: 3 / 2.4),
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemCount: weekData.length,
+                                        itemBuilder: (context, index) {
+                                          var weekDocument = weekData[index];
+                                          var weekNumber = weekDocument.id;
+                                          return buildWeekTile(
+                                              context,
+                                              studentId,
+                                              weekNumber,
+                                              weekDocument);
+                                        },
+                                      );
+                                    } else {
+                                      return const Center(
+                                        child: Text('No weeks available'),
+                                      );
+                                    }
+                                  } else {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                },
+                              )
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ),
                   Positioned(
                     bottom: 16,
                     right: 16,
-                    child: FloatingActionButton(
+                    child: SpeedDial(
                       backgroundColor: const Color(0xFF202628),
-
-                      onPressed: () {
-                        showWeekCreationDialog(context);
-                      }, // Add your onPressed function here
-                      child: const Icon(
-                        Icons.add,
-                        color: Colors.white,
-                      ),
+                      animatedIcon: AnimatedIcons.menu_close,
+                      animatedIconTheme:
+                          const IconThemeData(size: 22.0, color: Colors.white),
+                      visible: true,
+                      curve: Curves.bounceIn,
+                      children: [
+                        SpeedDialChild(
+                          child: const Icon(Icons.add, color: Colors.white),
+                          backgroundColor: const Color(0xFF202628),
+                          onTap: () {
+                            dialogHelpers.showWeekCreationDialog(
+                              context,
+                              studentId: studentId,
+                              studentName: studentName,
+                            );
+                          },
+                          label: 'Create Week',
+                          labelStyle: const TextStyle(
+                              fontSize: 16.0, color: Colors.white),
+                          labelBackgroundColor: Colors.black,
+                        ),
+                      ],
                     ),
                   )
                 ],
@@ -186,36 +252,6 @@ class WeekCreationPage extends StatelessWidget {
           }
         },
       ),
-    );
-  }
-
-  Future<void> showDeleteDialog(
-      BuildContext context, String studentId, String studentName) async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Delete Student'),
-          content: Text('Are you sure you want to delete $studentName?'),
-          actions: [
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                primary: Colors.red,
-              ),
-              child: const Text('Delete'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancel'),
-            ),
-          ],
-        );
-      },
     );
   }
 }

@@ -392,7 +392,7 @@ class _AddStudentState extends State<AddStudent> {
                         // After saving, you may want to navigate back to the StudentList
                         Navigator.pop(context);
                       }
-                    }, 
+                    },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
                         const Color(0xFF202628),
