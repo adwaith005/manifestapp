@@ -1,36 +1,63 @@
 // ignore_for_file: use_key_in_widget_constructors, camel_case_types
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive/hive.dart';
 import 'package:themanifestapp/Screens/home.dart';
+import 'package:themanifestapp/Screens/landingpage.dart';
 import 'package:themanifestapp/Screens/profile.dart';
 import 'package:themanifestapp/Screens/progress.dart';
-import 'package:themanifestapp/db/hivelogout.dart';
 
 class MyBottomNavigationBar extends StatefulWidget {
   MyBottomNavigationBar({
-    this.batchNo,
-    this.email,
     Key? key,
-    required this.userDetails,
   }) : super(key: key);
-
-  final String? batchNo;
-  final String? email;
-  final Map<String, dynamic> userDetails;
 
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<MyBottomNavigationBar> {
+  final user = FirebaseAuth.instance.currentUser!;
+  String name = '';
+  String email = '';
   int _currentIndex = 0;
   String _appBarTitle = 'Home';
 
   @override
+  void initState() {
+    super.initState();
+    // Fetch user data when the widget is initialized
+    if (mounted) {
+      fetchStudentData(user.uid);
+    }
+  }
+
+  Future<void> fetchStudentData(String uid) async {
+    try {
+      var studentRef = FirebaseFirestore.instance.collection('students');
+      var docSnapshot = await studentRef.doc(uid).get();
+
+      if (docSnapshot.exists) {
+        setState(() {
+          name = docSnapshot['name'];
+          email = user.email ?? '';
+        });
+      } else {
+        print('Document does not exist');
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+  // .
+
+  @override
   Widget build(BuildContext context) {
+    print('this is bottom nav bar $user.uid');
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -49,7 +76,7 @@ class _HomeState extends State<MyBottomNavigationBar> {
       ),
       endDrawer: Container(
         width: 217.0, // Set the width of the drawer
-        child: MenuDrawer(userDetails: widget.userDetails),
+        child: MenuDrawer(name: name, email: email),
       ),
       body: _getBody(_currentIndex),
       bottomNavigationBar: ConvexAppBar(
@@ -76,17 +103,18 @@ class _HomeState extends State<MyBottomNavigationBar> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Widget _getBody(int currentIndex) {
+    // Add a check to see if the widget is still mounted
+    if (!mounted) {
+      return Container();
+    }
+
     switch (currentIndex) {
       case 0:
-        return HomeScreen(userDetails: widget.userDetails);
+        return HomeScreen(uid: user.uid);
       case 1:
-        return const ProgressScreen();
+        return ProgressScreen(uid: user.uid);
       case 2:
-        return ProfileScreen(
-          batchNo: widget.batchNo,
-          email: widget.email,
-          
-        );
+        return ProfileScreen(uid: user.uid);
       default:
         return Container();
     }
@@ -114,15 +142,17 @@ class _HomeState extends State<MyBottomNavigationBar> {
 }
 
 class MenuDrawer extends StatelessWidget {
-  final Map<String, dynamic> userDetails;
+  final String name;
+  final String email;
 
-  const MenuDrawer({Key? key, required this.userDetails}) : super(key: key);
+  const MenuDrawer({
+    Key? key,
+    required this.name,
+    required this.email,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    String studentName = userDetails['name'] ?? 'N/A';
-    String domain = userDetails['domain'] ?? 'N/A';
-
     return Drawer(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -133,7 +163,7 @@ class MenuDrawer extends StatelessWidget {
               color: Color(0xFF090B0B),
             ),
             accountName: Text(
-              studentName,
+              name,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
@@ -141,7 +171,7 @@ class MenuDrawer extends StatelessWidget {
               ),
             ),
             accountEmail: Text(
-              domain,
+              email,
               style: const TextStyle(
                 color: Color(0xFF9C9C9C),
                 fontSize: 12,
@@ -152,7 +182,7 @@ class MenuDrawer extends StatelessWidget {
               backgroundColor: const Color(0xFFD9D9D9),
               radius: 50,
               child: Text(
-                studentName.isNotEmpty ? studentName[0] : 'A',
+                name.isNotEmpty ? name[0] : 'A',
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -172,10 +202,11 @@ class MenuDrawer extends StatelessWidget {
               style: TextStyle(color: Colors.red),
             ),
             onTap: () async {
-              print('logoutbuttonpressed');
-              performLogout(context);
-                await Hive.box('userDetails').close();
-
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => Landingpage()),
+              );
             },
           ),
           ListTile(

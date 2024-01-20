@@ -1,49 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProfileScreen extends StatefulWidget {
-  final String? batchNo;
-  final String? email;
+  final String uid;
 
-  const ProfileScreen({
-    Key? key,
-    required this.batchNo,
-    required this.email,
-  }) : super(key: key);
+  const ProfileScreen({Key? key, required this.uid}) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  Map<String, dynamic>? currentUser; // Change the type to Map<String, dynamic>?
-  @override
+  String name = '';
+  String domain = '';
+  String batch = '';
+  String email = '';
+  String phoneNo = '';
+
   @override
   void initState() {
     super.initState();
-    final userBox = Hive.box<Map<String, dynamic>>('userDetails');
-    currentUser = userBox.get('userDetails');
+    fetchStudentData(widget.uid);
+  }
 
-    if (currentUser != null) {
-      // Print individual properties for debugging
-      print("Name: ${currentUser?['name']}");
-      print("Domain: ${currentUser?['domain']}");
-      print("BatchNo: ${currentUser?['batchNo']}");
-      print("Email: ${currentUser?['email']}");
-      print("PhoneNumber: ${currentUser?['phoneNumber']}");
-    } else {
-      print("User details not found in Hive.");
+  Future<void> fetchStudentData(String uid) async {
+    try {
+      var studentRef = FirebaseFirestore.instance.collection('students');
+      var docSnapshot = await studentRef.doc(uid).get();
+
+      if (mounted) {
+        if (docSnapshot.exists) {
+          setState(() {
+            name = docSnapshot['name'];
+            domain = docSnapshot['domain'];
+            batch = docSnapshot['batchNo'];
+            email = docSnapshot['email'];
+            phoneNo = docSnapshot['phoneNumber'];
+          });
+        } else {
+          print('Document does not exist');
+        }
+      }
+    } catch (e) {
+      // Handle errors
+      print('Error fetching data: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    String name = currentUser?['name'] ?? 'N/A';
-    String domain = currentUser?['domain'] ?? 'N/A';
-    String batch = currentUser?['batchNo'] ?? 'N/A';
-    String email = currentUser?['email'] ?? 'N/A';
-    String phoneNo = currentUser?['phoneNumber'] ?? 'N/A';
-    savetoHive();
     return Scaffold(
       body: Stack(
         children: [
@@ -130,7 +135,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Batch: "$batch"',
+                        'Batch: $batch',
                         style: const TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
@@ -165,10 +170,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-}
-
-Future<void> savetoHive() async {
-  final userBox = Hive.box<Map<String, dynamic>>('userDetails');
-  final storedDetails = userBox.get('userDetails');
-  print('User Details in Hive: $storedDetails');
 }

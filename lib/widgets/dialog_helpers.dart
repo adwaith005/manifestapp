@@ -10,10 +10,8 @@ Future<void> showWeekCreationDialog(
   required String studentName,
 }) async {
   String weekNumber = '';
-  String weekName = '';
-  final _formKey = GlobalKey<FormState>();
-  final _weekNumberController = TextEditingController();
-  final _weekNameController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+  final weekNumberController = TextEditingController();
 
   await showDialog(
     context: context,
@@ -22,14 +20,14 @@ Future<void> showWeekCreationDialog(
         backgroundColor: const Color(0xFFD9D9D9),
         title: const Text('Week Creation'),
         content: Form(
-          key: _formKey,
+          key: formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextFormField(
-                controller: _weekNumberController,
+                controller: weekNumberController,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                keyboardType: TextInputType.phone,
+                keyboardType: TextInputType.text,
                 decoration: InputDecoration(
                   labelText: 'Enter week number:',
                   labelStyle: TextStyle(
@@ -63,39 +61,6 @@ Future<void> showWeekCreationDialog(
               const SizedBox(
                 height: 10,
               ),
-              TextFormField(
-                controller: _weekNameController,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                decoration: InputDecoration(
-                  labelText: 'Enter week name:',
-                  labelStyle: TextStyle(
-                    color: Colors.black,
-                    fontFamily: GoogleFonts.poppins().fontFamily,
-                  ),
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  errorBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
-                  ),
-                  focusedErrorBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
-                  ),
-                ),
-                style: TextStyle(
-                  color: Colors.black,
-                  fontFamily: GoogleFonts.poppins().fontFamily,
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a week name';
-                  }
-                  return null;
-                },
-              ),
             ],
           ),
         ),
@@ -103,35 +68,29 @@ Future<void> showWeekCreationDialog(
           ElevatedButton(
             onPressed: () async {
               try {
-                if (_formKey.currentState!.validate()) {
-                  // Retrieve the entered values
-                  weekNumber = _weekNumberController.text;
-                  weekName = _weekNameController.text;
-
+                if (formKey.currentState!.validate()) {
+                  weekNumber = weekNumberController.text;
                   await FirebaseFirestore.instance
                       .collection('students')
                       .doc(studentId)
                       .collection('weeks')
-                      .doc(weekNumber) // Use weekNumber as the document ID
+                      .doc(weekNumber) 
                       .set({
-                        'WeekName':weekName
+                      
                       });
-
-                  // Close the dialog
                   Navigator.pop(context);
                 }
               } catch (error) {
                 print("Error creating week: $error");
               }
             },
-            child: Text('Create'),
+            child: const  Text('Create'),
           ),
           ElevatedButton(
             onPressed: () {
-              // Handle the logic when the user presses the "Cancel" button
               Navigator.pop(context);
             },
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
         ],
       );

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/adapters.dart';
-import 'package:themanifestapp/Screens/bottomnav.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:themanifestapp/Screens/landingpage.dart';
+import 'package:themanifestapp/Screens/bottomnav.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  const SplashScreen({Key? key}) : super(key: key);
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -15,7 +14,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    timetaking();
+    Timetaking();
   }
 
   @override
@@ -40,27 +39,27 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-Future<void> timetaking() async {
-  await Hive.initFlutter();
+  Future<void> Timetaking() async {
+    await Future.delayed(const Duration(seconds: 5));
 
-  final Box<bool> box = await Hive.openBox<bool>('isLoggedIn');
-  final bool? isLoggedIn = box.get('status', defaultValue: false);
+    // Store the context in a variable
+    BuildContext? localContext = context;
 
-  if (isLoggedIn ?? false) {
-    // User is already logged in, navigate to the home page
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => MyBottomNavigationBar(userDetails: {},)),
-    );
-  } else {
-    // User is not logged in, navigate to the login page
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const Landingpage()),
-    );
+    // Check if the user is already logged in
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      // If user is logged in, navigate to MyBottomNavigationBar
+      Navigator.pushReplacement(
+        localContext,
+        MaterialPageRoute(builder: (localContext) => MyBottomNavigationBar()),
+      );
+    } else {
+      // If user is not logged in, navigate to LandingPage
+      Navigator.pushReplacement(
+        localContext,
+        MaterialPageRoute(builder: (localContext) => Landingpage()),
+      );
+    }
   }
-}
-
-
-
 }

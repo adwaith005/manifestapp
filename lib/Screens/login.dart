@@ -1,7 +1,10 @@
+import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:themanifestapp/Admin/login.dart';
+import 'package:themanifestapp/Screens/bottomnav.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -13,7 +16,6 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final _batchnumberController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -88,45 +90,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       Padding(
                         padding: EdgeInsets.all(isSmallScreen ? 10 : 20),
                         child: TextFormField(
-                          controller: _batchnumberController,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: 'Batch no:',
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontFamily: GoogleFonts.poppins().fontFamily,
-                            ),
-                            enabledBorder:const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                            focusedBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.error),
-                            ),
-                            focusedErrorBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.error),
-                            ),
-                          ),
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontFamily: GoogleFonts.poppins().fontFamily,
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter a batch no';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(isSmallScreen ? 10 : 20),
-                        child: TextFormField(
                           controller: emailController,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           decoration: InputDecoration(
@@ -135,8 +98,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Colors.black,
                               fontFamily: GoogleFonts.poppins().fontFamily,
                             ),
-                            enabledBorder:  const  OutlineInputBorder(
-                              borderSide:  BorderSide(color: Colors.black),
+                            enabledBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
                             ),
                             focusedBorder: const OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.black),
@@ -174,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Colors.black,
                               fontFamily: GoogleFonts.poppins().fontFamily,
                             ),
-                            enabledBorder: const  OutlineInputBorder(
+                            enabledBorder: const OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.black),
                             ),
                             focusedBorder: const OutlineInputBorder(
@@ -216,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 _formKey.currentState!.validate()) {
                               // Ignore: avoid_print
                               print('object clicked');
-                              // onLogin();
+                              onLogin();
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -263,7 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-                       SizedBox(
+                      SizedBox(
                         height: isSmallScreen ? 80 : 155,
                       )
                     ],
@@ -276,73 +239,57 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
+  Future<void> onLogin() async {
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      User? user = userCredential.user;
+
+      if (user != null) {
+        print('Logged in successfully: ${user.uid}');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MyBottomNavigationBar()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Invalid email or password. Please check your credentials.'),
+            duration: Duration(seconds: 3),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else {
+        print('Login failed: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Login failed. Please try again.'),
+            duration: Duration(seconds: 3),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+
+      emailController.clear();
+      passwordController.clear();
+    } catch (e) {
+      // Handle other exceptions
+      log('Login failed: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login failed. Please try again.'),
+          duration: Duration(seconds: 3),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 }
-
-
-  // onLogin() async {
-  //   try {
-  //     final batchNo = _batchnumberController.text.trim();
-  //     final email = emailController.text.trim();
-  //     final studentRef = FirebaseFirestore.instance
-  //         .collection('Batches')
-  //         .doc(batchNo)
-  //         .collection('students')
-  //         .doc(email);
-  //     final studentsnapshot = await studentRef.get();
-
-  //     if (studentsnapshot.exists) {
-  //       final studentData = studentsnapshot.data();
-  //       if (studentData is Map<String, dynamic>) {
-  //         if (emailController.text == studentData['email'] &&
-  //             passwordController.text == studentData['password']) {
-  //           log('User is logged in. User Details: $studentData');
-  //           await saveUserDetails(studentData);
-  //           await Hive.box<bool>('isLoggedIn').put('status', true);
-
-  //           Navigator.push(
-  //             context,
-  //             MaterialPageRoute(
-  //               builder: (context) => MyBottomNavigationBar(
-  //                 batchNo: batchNo,
-  //                 email: email,
-  //                 userDetails: studentData,
-  //               ),
-  //             ),
-  //           );
-  //         } else {
-  //           ScaffoldMessenger.of(context).showSnackBar(
-  //             const SnackBar(
-  //               content: Text('Invalid credentials. Please try again.'),
-  //             ),
-  //           );
-  //         }
-  //       } else {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           const SnackBar(
-  //             content: Text('Invalid data format. Please try again.'),
-  //           ),
-  //         );
-  //       }
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(
-  //           content: Text('User not found. Please check your details.'),
-  //         ),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     log('Error during login: $e');
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text('An error occurred. Please try again.'),
-  //       ),
-  //     );
-  //   }
-  // }
-
-  // Future<void> saveUserDetails(Map<String, dynamic> userDetails) async {
-  //   final userBox = Hive.box<Map<String, dynamic>>('userDetails');
-  //   await userBox.put('userDetails', userDetails);
-  //   print('User Details saved to Hive: $userDetails');
-  // }
-

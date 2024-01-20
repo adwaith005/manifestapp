@@ -1,104 +1,234 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive/hive.dart';
+import 'package:themanifestapp/Screens/resultpage.dart';
+import 'package:themanifestapp/widgets/search.dart';
 
 class HomeScreen extends StatefulWidget {
+  final String uid;
 
-  const HomeScreen({Key? key, required Map<String, dynamic> userDetails}) : super(key: key);
+  const HomeScreen({Key? key, required this.uid}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Map<String, dynamic>? currentUser;
+  String name = '';
+  String _searchTerm = '';
+
+  // Added a GlobalKey for the RefreshIndicator
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
     super.initState();
-     final userBox = Hive.box<Map<String, dynamic>>('userDetails');
-    currentUser = userBox.get('userDetails');
+    fetchStudentData(widget.uid);
+  }
+
+  Future<void> fetchStudentData(String uid) async {
+    try {
+      var studentRef = FirebaseFirestore.instance.collection('students');
+      var docSnapshot = await studentRef.doc(uid).get();
+
+      if (docSnapshot.exists) {
+        setState(() {
+          name = docSnapshot['name'];
+        });
+      } else {
+        log('Document does not exist');
+      }
+    } catch (e) {
+      log('Error fetching data: $e');
+    }
+  }
+
+  Future<void> _refresh() async {
+    await fetchStudentData(widget.uid);
   }
 
   @override
   Widget build(BuildContext context) {
-        String name = currentUser?['name'] ?? 'N/A';
-
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          const SizedBox(
-            height: 20,
-          ),
-          Row(
+      body: RefreshIndicator(
+        key: _refreshIndicatorKey,
+        onRefresh: _refresh,
+        child: SingleChildScrollView(
+          child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25),
-                child: Text(
-                  "Hello $name",
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: const Color(0xFF414141),
-                    fontWeight: FontWeight.w900,
-                    fontFamily: GoogleFonts.poppins().fontFamily,
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    child: Text(
+                      "Hello $name",
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: const Color(0xFF414141),
+                        fontWeight: FontWeight.w900,
+                        fontFamily: GoogleFonts.inter().fontFamily,
+                      ),
+                    ),
                   ),
+                ],
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                child: Row(
+                  children: [
+                    Text(
+                      "Your Reviews",
+                      style: TextStyle(
+                          color: const Color(0xFF414141),
+                          fontWeight: FontWeight.bold,
+                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontSize: 16),
+                    )
+                  ],
                 ),
               ),
-            ],
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 30),
-            child: Container(
-              width: 338,
-              height: 76,
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(1),
-                border: Border.all(color: Colors.black),
+              Searchbar(
+                onSearchChanged: (value) =>
+                    setState(() => _searchTerm = value.toLowerCase()),
               ),
-              child: RichText(
-                text: TextSpan(
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: GoogleFonts.inter().fontFamily,
-                  ),
-                  children: const <TextSpan>[
-                    TextSpan(
-                      text: "Your next Review date is\n",
-                    ),
-                    TextSpan(
-                      text: "Thursday, 22 Dec 2023",
-                      style: TextStyle(
-                        color: Color(0xFF118900),
-                      ),
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                          .collection("students")
+                          .doc(widget.uid)
+                          .collection('weeks')
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          var weekData = (snapshot.data)?.docs;
+                          if (weekData != null && weekData.isNotEmpty) {
+                            // Filter weeks based on the search term
+                            var filteredWeeks = weekData
+                                .where((week) =>
+                                    week.id.toLowerCase().contains(_searchTerm))
+                                .toList();
+
+                            return GridView.builder(
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 20.0,
+                                mainAxisSpacing: 20.0,
+                                childAspectRatio: 3 / 2,
+                              ),
+                              shrinkWrap: true,
+                              itemCount: filteredWeeks.length,
+                              itemBuilder: (context, index) {
+                                var weekDocument = filteredWeeks[index];
+                                var weekNumber = weekDocument.id;
+
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => Resultpage(
+                                          uid: widget.uid,
+                                          weekNumber: weekNumber,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFEFEFEF),
+                                      borderRadius: BorderRadius.circular(9.0),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.5),
+                                          spreadRadius: 1,
+                                          blurRadius: 5,
+                                          offset: const Offset(0, 3),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ListTile(
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 0.0),
+                                      title: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(height: 10),
+                                          Center(
+                                            child: Text(
+                                              'Week',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 20,
+                                                fontFamily:
+                                                    GoogleFonts.poppins()
+                                                        .fontFamily,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 3),
+                                          Center(
+                                            child: Text(
+                                              weekNumber.isEmpty
+                                                  ? 'No Week'
+                                                  : weekNumber,
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 20,
+                                                fontFamily:
+                                                    GoogleFonts.poppins()
+                                                        .fontFamily,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                          
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          } else {
+                            return const Center(
+                              child: Text('No weeks available'),
+                            );
+                          }
+                        } else {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                      },
                     ),
                   ],
                 ),
               ),
-            ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 280,top: 18,left: 27),
-            child: Text(
-              "Your Reviews",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                fontFamily: GoogleFonts.inter().fontFamily,
-              ),
-            ),
-          )
-        ],
+        ),
       ),
     );
-
   }
-
 }
