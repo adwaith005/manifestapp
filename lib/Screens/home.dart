@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,7 +18,6 @@ class _HomeScreenState extends State<HomeScreen> {
   String name = '';
   String _searchTerm = '';
 
-  // Added a GlobalKey for the RefreshIndicator
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
@@ -52,6 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: RefreshIndicator(
@@ -60,17 +60,15 @@ class _HomeScreenState extends State<HomeScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    padding: EdgeInsets.symmetric(horizontal: isSmallScreen ? 10 : 25),
                     child: Text(
                       "Hello $name",
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: isSmallScreen ? 18 : 24,
                         color: const Color(0xFF414141),
                         fontWeight: FontWeight.w900,
                         fontFamily: GoogleFonts.inter().fontFamily,
@@ -80,17 +78,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                padding: EdgeInsets.symmetric(horizontal: isSmallScreen ? 10 : 25, vertical: 10),
                 child: Row(
                   children: [
                     Text(
                       "Your Reviews",
                       style: TextStyle(
-                          color: const Color(0xFF414141),
-                          fontWeight: FontWeight.bold,
-                          fontFamily: GoogleFonts.inter().fontFamily,
-                          fontSize: 16),
+                        color: const Color(0xFF414141),
+                        fontWeight: FontWeight.bold,
+                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontSize: isSmallScreen ? 14 : 16,
+                      ),
                     )
                   ],
                 ),
@@ -99,9 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onSearchChanged: (value) =>
                     setState(() => _searchTerm = value.toLowerCase()),
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.only(left: 16, right: 16),
                 child: Column(
@@ -117,7 +113,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (snapshot.hasData) {
                           var weekData = (snapshot.data)?.docs;
                           if (weekData != null && weekData.isNotEmpty) {
-                            // Filter weeks based on the search term
                             var filteredWeeks = weekData
                                 .where((week) =>
                                     week.id.toLowerCase().contains(_searchTerm))
@@ -125,11 +120,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
                             return GridView.builder(
                               gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 20.0,
-                                mainAxisSpacing: 20.0,
-                                childAspectRatio: 3 / 2,
+                                   SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: isSmallScreen ? 2 : 2,
+                                crossAxisSpacing: isSmallScreen ? 13.0 : 20.0,
+                                mainAxisSpacing: isSmallScreen ? 20.0 : 20.0,
+                                childAspectRatio: isSmallScreen ? 1.7 : 3 / 2,
                               ),
                               shrinkWrap: true,
                               itemCount: filteredWeeks.length,
@@ -202,7 +197,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                               ),
                                             ),
                                           ),
-                                          
                                         ],
                                       ),
                                     ),

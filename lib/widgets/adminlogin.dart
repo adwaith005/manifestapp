@@ -182,7 +182,7 @@ class _AdminLoginFormState extends State<AdminLoginForm> {
             ),
           ),
           SizedBox(
-            height: isSmallScreen ? 170 : 155,
+            height: isSmallScreen ? 300 : 155,
           )
         ],
       ),
