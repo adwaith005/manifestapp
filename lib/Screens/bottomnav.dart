@@ -11,7 +11,7 @@ import 'package:themanifestapp/Screens/profile.dart';
 import 'package:themanifestapp/Screens/progress.dart';
 
 class MyBottomNavigationBar extends StatefulWidget {
-  MyBottomNavigationBar({
+  const MyBottomNavigationBar({
     Key? key,
   }) : super(key: key);
 
@@ -29,7 +29,6 @@ class _HomeState extends State<MyBottomNavigationBar> {
   @override
   void initState() {
     super.initState();
-    // Fetch user data when the widget is initialized
     if (mounted) {
       fetchStudentData(user.uid);
     }
@@ -74,8 +73,8 @@ class _HomeState extends State<MyBottomNavigationBar> {
           ),
         ),
       ),
-      endDrawer: Container(
-        width: 217.0, // Set the width of the drawer
+      endDrawer: SizedBox(
+        width: 217.0,
         child: MenuDrawer(name: name, email: email),
       ),
       body: _getBody(_currentIndex),
@@ -103,7 +102,6 @@ class _HomeState extends State<MyBottomNavigationBar> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Widget _getBody(int currentIndex) {
-    // Add a check to see if the widget is still mounted
     if (!mounted) {
       return Container();
     }
@@ -203,9 +201,10 @@ class MenuDrawer extends StatelessWidget {
             ),
             onTap: () async {
               await FirebaseAuth.instance.signOut();
+              // ignore: use_build_context_synchronously
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => Landingpage()),
+                MaterialPageRoute(builder: (context) => const Landingpage()),
               );
             },
           ),

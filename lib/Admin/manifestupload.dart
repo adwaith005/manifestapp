@@ -82,6 +82,7 @@ class _ManifestUploadState extends State<ManifestUpload> {
       TextEditingController controller, TextInputType keyboardType) {
     return Expanded(
       child: TextFormField(
+        
         controller: controller,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         keyboardType: keyboardType,
@@ -308,7 +309,7 @@ class _ManifestUploadState extends State<ManifestUpload> {
                           'Theory mark',
                           'Please enter theory mark :',
                           theoryController,
-                          TextInputType.number),
+                          TextInputType.number,),
                     ],
                   ),
                 ),

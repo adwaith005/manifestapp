@@ -64,7 +64,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 children: [
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: isSmallScreen ? 10 : 25),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: isSmallScreen ? 10 : 25),
                     child: Text(
                       "Hello $name",
                       style: TextStyle(
@@ -78,7 +79,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: isSmallScreen ? 10 : 25, vertical: 10),
+                padding: EdgeInsets.symmetric(
+                    horizontal: isSmallScreen ? 10 : 25, vertical: 10),
                 child: Row(
                   children: [
                     Text(
@@ -117,10 +119,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 .where((week) =>
                                     week.id.toLowerCase().contains(_searchTerm))
                                 .toList();
-
+                
                             return GridView.builder(
                               gridDelegate:
-                                   SliverGridDelegateWithFixedCrossAxisCount(
+                                  SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: isSmallScreen ? 2 : 2,
                                 crossAxisSpacing: isSmallScreen ? 13.0 : 20.0,
                                 mainAxisSpacing: isSmallScreen ? 20.0 : 20.0,
@@ -131,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               itemBuilder: (context, index) {
                                 var weekDocument = filteredWeeks[index];
                                 var weekNumber = weekDocument.id;
-
+                            
                                 return GestureDetector(
                                   onTap: () {
                                     Navigator.push(

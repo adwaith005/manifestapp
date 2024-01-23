@@ -177,7 +177,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {
                             if (_formKey.currentState != null &&
                                 _formKey.currentState!.validate()) {
-                              // Ignore: avoid_print
                               print('object clicked');
                               onLogin();
                             }
@@ -218,7 +217,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                   text: 'Admin',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    // Add any other styles as needed
                                   ),
                                 ),
                               ],
@@ -247,7 +245,7 @@ class _LoginScreenState extends State<LoginScreen> {
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-
+      print('dklgjadg');
       User? user = userCredential.user;
 
       if (user != null) {
@@ -258,6 +256,7 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } on FirebaseAuthException catch (e) {
+      print('FirebaseAuthException: ${e.code} - ${e.message}');
       if (e.code == 'user-not-found' || e.code == 'wrong-password') {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

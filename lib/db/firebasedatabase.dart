@@ -16,9 +16,7 @@ class MyFirebaseDatabase {
     required String currentUserId,
   }) async {
     try {
-      // Use a transaction for atomic batch creation
       await _firestore.runTransaction((Transaction transaction) async {
-        // Check if the batch exists, and create it if not
         DocumentSnapshot batchSnapshot = await transaction
             .get(_firestore.collection("Batches").doc(batchNo));
         if (!batchSnapshot.exists) {
@@ -27,8 +25,6 @@ class MyFirebaseDatabase {
             {'students': [], 'batch': batchNo},
           );
         }
-
-        // Add the student to the batch
         transaction.set(
           _firestore.collection("students").doc(currentUserId),
           {
@@ -41,8 +37,6 @@ class MyFirebaseDatabase {
             'batchNo': batchNo,
           },
         );
-
-        // Update the batch with the new student
         transaction.update(
           _firestore.collection("Batches").doc(batchNo),
           {
@@ -107,11 +101,9 @@ class MyFirebaseDatabase {
 
   Future<void> _deleteStudent(String studentId) async {
     try {
-      // Delete student from the "students" collection
       await _firestore.collection("students").doc(studentId).delete();
       log("Student deleted: $studentId");
 
-      // Delete Firebase Authentication user
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         await user.delete();

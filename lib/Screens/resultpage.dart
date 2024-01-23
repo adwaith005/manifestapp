@@ -27,8 +27,9 @@ class _ResultpageState extends State<Resultpage> {
   String reviewerName = '';
   String typingClub = '';
   String seminar = '';
-  String theoryMark ='';
+  String theoryMark = '';
   String practicalMark = '';
+  String pendingTopics = '';
   @override
   void initState() {
     super.initState();
@@ -36,7 +37,11 @@ class _ResultpageState extends State<Resultpage> {
     loadExistingData();
   }
 
-  void loadExistingData() async {
+  Future<void> _refreshData() async {
+    await loadExistingData();
+  }
+
+  Future<void> loadExistingData() async {
     try {
       DocumentSnapshot weekSnapshot = await FirebaseFirestore.instance
           .collection('students')
@@ -63,6 +68,7 @@ class _ResultpageState extends State<Resultpage> {
             seminar = data['seminar'] ?? 'Notupoload';
             theoryMark = data['theoryMark'] ?? '00';
             practicalMark = data['practicalMark'] ?? '00';
+            pendingTopics = data['pendingTopics'] ?? 'Notuploaded';
           });
         }
       }
@@ -78,7 +84,7 @@ class _ResultpageState extends State<Resultpage> {
     return Scaffold(
       appBar: AppBar(
         title: Padding(
-          padding: EdgeInsets.only(left: isSmallScreen ? 110 : 65),
+          padding: EdgeInsets.only(left: isSmallScreen ? 80 : 65),
           child: Text(
             'Manifest view',
             style: TextStyle(
@@ -89,388 +95,526 @@ class _ResultpageState extends State<Resultpage> {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Center(
-            child: Text(
-              'Week $weekNumber',
-              style: TextStyle(
-                fontSize: isSmallScreen ? 20 : 20,
-                fontWeight: FontWeight.w600,
-                fontFamily: GoogleFonts.inter().fontFamily,
-              ),
-            ),
-          ),
-          Center(
-            child: Text(
-              reviewDate,
-              style: TextStyle(
-                fontSize: isSmallScreen ? 13 : 13,
-                fontWeight: FontWeight.w600,
-                fontFamily: GoogleFonts.inter().fontFamily,
-              ),
-            ),
-          ),
-          Row(
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        child: SingleChildScrollView(
+          child: Column(
             children: [
-              Padding(
-                padding: EdgeInsets.only(
-                    top: isSmallScreen ? 20 : 20,
-                    left: isSmallScreen ? 25 : 15),
+              Center(
                 child: Text(
-                  reviewName,
+                  'Week $weekNumber',
                   style: TextStyle(
-                    color: const Color(0xFF575757),
                     fontSize: isSmallScreen ? 20 : 20,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                     fontFamily: GoogleFonts.inter().fontFamily,
                   ),
                 ),
-              )
-            ],
-          ),
-          Row(
-            children: [
+              ),
               Center(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                      left: isSmallScreen ? 25 : 10,
-                      top: isSmallScreen ? 5 : 20),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.all(Radius.circular(2)),
+                child: Text(
+                  reviewDate,
+                  style: TextStyle(
+                    fontSize: isSmallScreen ? 13 : 13,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: GoogleFonts.inter().fontFamily,
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                        top: isSmallScreen ? 20 : 20,
+                        left: isSmallScreen ? 15 : 15),
+                    child: Text(
+                      reviewName,
+                      style: TextStyle(
+                        color: const Color(0xFF575757),
+                        fontSize: isSmallScreen ? 20 : 25,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: GoogleFonts.inter().fontFamily,
+                      ),
                     ),
-                    height: isSmallScreen ? 44 : 28,
-                    width: isSmallScreen ? 370 : 380,
-                    child: Center(
-                      child: Text(
-                        reviewstatus,
-                        style: TextStyle(
+                  )
+                ],
+              ),
+              Row(
+                children: [
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          left: isSmallScreen ? 15 : 10,
+                          top: isSmallScreen ? 5 : 20),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: getReviewStatusColor(totalMark, theoryMark,
+                              practicalMark, reviewstatus),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(2)),
+                        ),
+                        height: isSmallScreen ? 44 : 28,
+                        width: isSmallScreen ? 330 : 380,
+                        child: Center(
+                          child: Text(
+                            reviewstatus,
+                            style: TextStyle(
+                              fontFamily: GoogleFonts.inter().fontFamily,
+                              fontWeight: FontWeight.w700,
+                              fontSize: isSmallScreen ? 20 : 14,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          left: isSmallScreen ? 15 : 10,
+                          top: isSmallScreen ? 30 : 10),
+                      child: Container(
+                        height: isSmallScreen ? 116 : 80,
+                        width: isSmallScreen ? 140 : 100,
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(7)),
+                        ),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding:
+                                  EdgeInsets.only(top: isSmallScreen ? 10 : 5),
+                              child: Text(
+                                'Total Score',
+                                style: TextStyle(
+                                  fontSize: isSmallScreen ? 14 : 10,
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: GoogleFonts.inter().fontFamily,
+                                ),
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: isSmallScreen ? 20 : 10),
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Text(
+                                      totalMark,
+                                      style: TextStyle(
+                                        fontSize: isSmallScreen ? 35 : 24,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily:
+                                            GoogleFonts.inter().fontFamily,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 0),
+                                  child: Text(
+                                    "/30",
+                                    style: TextStyle(
+                                      color: const Color(0xFFDFDFDF),
+                                      fontSize: isSmallScreen ? 35 : 24,
+                                      fontWeight: FontWeight.w700,
+                                      fontFamily:
+                                          GoogleFonts.inter().fontFamily,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        top: isSmallScreen ? 25 : 10,
+                        left: isSmallScreen ? 15 : 10,
+                      ),
+                      child: SizedBox(
+                        height: isSmallScreen ? 116 : 80,
+                        width: isSmallScreen ? 159 : 100,
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      top: isSmallScreen ? 10 : 5,
+                                      left: isSmallScreen ? 10 : 5),
+                                  child: Text(
+                                    'Advisor',
+                                    style: TextStyle(
+                                      color: const Color(0xFFCBCBCB),
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: isSmallScreen ? 15 : 10,
+                                      fontFamily:
+                                          GoogleFonts.inter().fontFamily,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Text(
+                                      advisorName,
+                                      style: TextStyle(
+                                        color: const Color(0xFF000000),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: isSmallScreen ? 20 : 15,
+                                        fontFamily:
+                                            GoogleFonts.inter().fontFamily,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      top: 0, left: isSmallScreen ? 10 : 5),
+                                  child: Text(
+                                    'Reviewer',
+                                    style: TextStyle(
+                                      color: const Color(0xFFCBCBCB),
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: isSmallScreen ? 16 : 10,
+                                      fontFamily:
+                                          GoogleFonts.inter().fontFamily,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Text(
+                                      reviewerName,
+                                      style: TextStyle(
+                                        color: const Color(0xFF000000),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: isSmallScreen ? 22 : 16,
+                                        fontFamily:
+                                            GoogleFonts.inter().fontFamily,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: isSmallScreen ? 15 : 10,
+                        top: isSmallScreen ? 25 : 5),
+                    child: Container(
+                      height: isSmallScreen ? 100 : 60,
+                      width: isSmallScreen ? 159 : 100,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFD9D9D9),
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                      ),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding:
+                                EdgeInsets.only(top: isSmallScreen ? 10 : 5),
+                            child: Text(
+                              'Typing club',
+                              style: TextStyle(
+                                color: const Color(0xFF585858),
+                                fontFamily: GoogleFonts.inter().fontFamily,
+                                fontWeight: FontWeight.w500,
+                                fontSize: isSmallScreen ? 16 : 12,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                EdgeInsets.only(top: isSmallScreen ? 5 : 0),
+                            child: Text(
+                              typingClub,
+                              style: TextStyle(
+                                color: const Color(0xFF1F1F1F),
+                                fontFamily: GoogleFonts.inter().fontFamily,
+                                fontWeight: FontWeight.w600,
+                                fontSize: isSmallScreen ? 35 : 24,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: isSmallScreen ? 25 : 10,
+                        top: isSmallScreen ? 25 : 5),
+                    child: Container(
+                      height: isSmallScreen ? 100 : 60,
+                      width: isSmallScreen ? 150 : 100,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFD9D9D9),
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                      ),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding:
+                                EdgeInsets.only(top: isSmallScreen ? 10 : 5),
+                            child: Center(
+                              child: Text(
+                                'Seminar',
+                                style: TextStyle(
+                                  color: const Color(0xFF585858),
+                                  fontFamily: GoogleFonts.inter().fontFamily,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: isSmallScreen ? 16 : 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                              top: isSmallScreen ? 5 : 0,
+                              left: isSmallScreen ? 5 : 10,
+                            ),
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Center(
+                                child: Text(
+                                  seminar,
+                                  style: TextStyle(
+                                    color: const Color(0xFF1F1F1F),
+                                    fontFamily:
+                                        GoogleFonts.poppins().fontFamily,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: isSmallScreen ? 20 : 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: isSmallScreen ? 10 : 1),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text(
+                      'Theory',
+                      style: TextStyle(
                           fontFamily: GoogleFonts.inter().fontFamily,
-                          fontWeight: FontWeight.w700,
-                          fontSize: isSmallScreen ? 20 : 14,
-                          color: Colors.white,
-                        ),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16),
+                    ),
+                    Text(
+                      'Practical',
+                      style: TextStyle(
+                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: isSmallScreen ? 15 : 10,
+                        top: isSmallScreen ? 10 : 5),
+                    child: Container(
+                      height: isSmallScreen ? 90 : 60,
+                      width: isSmallScreen ? 159 : 100,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF1F1F1),
+                        border: Border.all(),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(1)),
+                      ),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding:
+                                EdgeInsets.only(top: isSmallScreen ? 20 : 0),
+                            child: Text(
+                              theoryMark,
+                              style: TextStyle(
+                                color: const Color(0xFF1F1F1F),
+                                fontFamily: GoogleFonts.inter().fontFamily,
+                                fontWeight: FontWeight.w600,
+                                fontSize: isSmallScreen ? 39 : 24,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ),
-              )
-            ],
-          ),
-          Row(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(
-                    left: isSmallScreen ? 25 : 10,
-                    top: isSmallScreen ? 30 : 10),
-                child: Container(
-                  height: isSmallScreen ? 116 : 80,
-                  width: isSmallScreen ? 159 : 100,
-                  decoration: BoxDecoration(
-                    border: Border.all(),
-                    borderRadius: const BorderRadius.all(Radius.circular(7)),
-                  ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: isSmallScreen ? 10 : 5),
-                        child: Text(
-                          'Total Score',
-                          style: TextStyle(
-                            fontSize: isSmallScreen ? 14 : 10,
-                            fontWeight: FontWeight.w700,
-                            fontFamily: GoogleFonts.inter().fontFamily,
-                          ),
-                        ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: isSmallScreen ? 25 : 10,
+                        top: isSmallScreen ? 10 : 5),
+                    child: Container(
+                      height: isSmallScreen ? 90 : 60,
+                      width: isSmallScreen ? 150 : 100,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF1F1F1),
+                        border: Border.all(),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(1)),
                       ),
-                      Row(
+                      child: Column(
                         children: [
                           Padding(
                             padding:
-                                EdgeInsets.only(left: isSmallScreen ? 20 : 10),
+                                EdgeInsets.only(top: isSmallScreen ? 20 : 0),
                             child: Text(
-                              totalMark,
+                              practicalMark,
                               style: TextStyle(
-                                fontSize: isSmallScreen ? 40 : 24,
-                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF1F1F1F),
                                 fontFamily: GoogleFonts.inter().fontFamily,
+                                fontWeight: FontWeight.w600,
+                                fontSize: isSmallScreen ? 39 : 24,
                               ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 0),
-                            child: Text(
-                              "/30",
-                              style: TextStyle(
-                                color: const Color(0xFFDFDFDF),
-                                fontSize: isSmallScreen ? 40 : 24,
-                                fontWeight: FontWeight.w700,
-                                fontFamily: GoogleFonts.inter().fontFamily,
-                              ),
-                            ),
-                          )
                         ],
-                      )
-                    ],
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
               Padding(
-                padding: EdgeInsets.only(
-                    left: isSmallScreen ? 40 : 30,
-                    top: isSmallScreen ? 30 : 10),
-                child: SizedBox(
-                  height: isSmallScreen ? 116 : 80,
-                  width: isSmallScreen ? 159 : 100,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(
-                                top: isSmallScreen ? 10 : 5,
-                                left: isSmallScreen ? 10 : 5),
-                            child: Text(
-                              'Advisor',
-                              style: TextStyle(
-                                color: const Color(0xFFCBCBCB),
-                                fontWeight: FontWeight.w500,
-                                fontSize: isSmallScreen ? 15 : 10,
-                                fontFamily: GoogleFonts.inter().fontFamily,
+                padding: EdgeInsets.only(top: isSmallScreen ? 20 : 0),
+                child: Column(
+                  children: [
+                    SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          height: 260,
+                          width: 365,
+                          decoration: BoxDecoration(
+                            border: Border.all(),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(7)),
+                            color: const Color(0xFFEEEEEE),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  left: isSmallScreen ? 10 : 10,
+                                  top: isSmallScreen ? 10 : 5,
+                                ),
+                                child: Text(
+                                  'Pending Topics',
+                                  style: TextStyle(
+                                    fontFamily: GoogleFonts.inter().fontFamily,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.red,
+                                    fontSize: 16,
+                                  ),
+                                ),
                               ),
-                            ),
-                          )
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Padding(
-                            padding:
-                                EdgeInsets.only(left: isSmallScreen ? 10 : 5),
-                            child: Text(
-                              advisorName,
-                              style: TextStyle(
-                                color: const Color(0xFF000000),
-                                fontWeight: FontWeight.bold,
-                                fontSize: isSmallScreen ? 20 : 15,
-                                fontFamily: GoogleFonts.inter().fontFamily,
+                              Flexible(
+                                // or Expanded
+                                child: Padding(
+                                  padding: EdgeInsets.only(
+                                    left: isSmallScreen ? 10 : 10,
+                                    top: isSmallScreen ? 10 : 5,
+                                  ),
+                                  child: SingleChildScrollView(
+                                    child: Text(
+                                      pendingTopics,
+                                      style: TextStyle(
+                                        fontFamily:
+                                            GoogleFonts.inter().fontFamily,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                          )
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(
-                                top: 0, left: isSmallScreen ? 10 : 5),
-                            child: Text(
-                              'Reviewer',
-                              style: TextStyle(
-                                color: const Color(0xFFCBCBCB),
-                                fontWeight: FontWeight.w500,
-                                fontSize: isSmallScreen ? 16 : 10,
-                                fontFamily: GoogleFonts.inter().fontFamily,
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Padding(
-                            padding:
-                                EdgeInsets.only(left: isSmallScreen ? 10 : 5),
-                            child: Text(
-                              reviewerName,
-                              style: TextStyle(
-                                color: const Color(0xFF000000),
-                                fontWeight: FontWeight.bold,
-                                fontSize: isSmallScreen ? 25 : 16,
-                                fontFamily: GoogleFonts.inter().fontFamily,
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            ],
-          ),
-          Row(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(
-                    left: isSmallScreen ? 25 : 10, top: isSmallScreen ? 25 : 5),
-                child: Container(
-                  height: isSmallScreen ? 90 : 60,
-                  width: isSmallScreen ? 159 : 100,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFD9D9D9),
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                  ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: isSmallScreen ? 10 : 5),
-                        child: Text(
-                          'Typing club',
-                          style: TextStyle(
-                            color: const Color(0xFF585858),
-                            fontFamily: GoogleFonts.inter().fontFamily,
-                            fontWeight: FontWeight.w500,
-                            fontSize: isSmallScreen ? 16 : 12,
+                            ],
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: isSmallScreen ? 5 : 0),
-                        child: Text(
-                          typingClub,
-                          style: TextStyle(
-                            color: const Color(0xFF1F1F1F),
-                            fontFamily: GoogleFonts.inter().fontFamily,
-                            fontWeight: FontWeight.w600,
-                            fontSize: isSmallScreen ? 39 : 24,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                    left: isSmallScreen ? 40 : 10, top: isSmallScreen ? 25 : 5),
-                child: Container(
-                  height: isSmallScreen ? 90 : 60,
-                  width: isSmallScreen ? 159 : 100,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFD9D9D9),
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                  ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: isSmallScreen ? 10 : 5),
-                        child: Text(
-                          'Seminar',
-                          style: TextStyle(
-                            color: const Color(0xFF585858),
-                            fontFamily: GoogleFonts.inter().fontFamily,
-                            fontWeight: FontWeight.w500,
-                            fontSize: isSmallScreen ? 16 : 12,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: isSmallScreen ? 5 : 0),
-                        child: Text(
-                          seminar,
-                          style: TextStyle(
-                            color: const Color(0xFF1F1F1F),
-                            fontFamily: GoogleFonts.inter().fontFamily,
-                            fontWeight: FontWeight.w600,
-                            fontSize: isSmallScreen ? 20 : 16,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          Padding(
-            padding: EdgeInsets.only(top: isSmallScreen ? 10 : 1),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  'Theory',
-                  style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16),
-                ),
-                Text(
-                  'Practical',
-                  style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16),
-                ),
-              ],
-            ),
-          ),
-          Row(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(
-                    left: isSmallScreen ? 25 : 10, top: isSmallScreen ? 10 : 5),
-                child: Container(
-                  height: isSmallScreen ? 90 : 60,
-                  width: isSmallScreen ? 159 : 100,
-                  decoration:  BoxDecoration(
-                    color: const Color(0xFFF1F1F1),
-                    border: Border.all(),
-                    borderRadius: const BorderRadius.all(Radius.circular(1)),
-                  ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: isSmallScreen ? 20 : 0),
-                        child: Text(
-                          theoryMark,
-                          style: TextStyle(
-                            color: const Color(0xFF1F1F1F),
-                            fontFamily: GoogleFonts.inter().fontFamily,
-                            fontWeight: FontWeight.w600,
-                            fontSize: isSmallScreen ? 39 : 24,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                    left: isSmallScreen ? 40 : 10, top: isSmallScreen ? 10 : 5),
-                child: Container(
-                  height: isSmallScreen ? 90 : 60,
-                  width: isSmallScreen ? 159 : 100,
-                  decoration:  BoxDecoration(
-                    color: const Color(0xFFF1F1F1),
-                    border: Border.all(),
-                    borderRadius:const  BorderRadius.all(Radius.circular(1)),
-                  ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: isSmallScreen ? 20 : 0),
-                        child: Text(
-                          practicalMark,
-                          style: TextStyle(
-                            color: const Color(0xFF1F1F1F),
-                            fontFamily: GoogleFonts.inter().fontFamily,
-                            fontWeight: FontWeight.w600,
-                            fontSize: isSmallScreen ? 39 : 24,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          )
-        ],
+        ),
       ),
     );
+  }
+
+  Color getReviewStatusColor(String totalMark, String theoryMark,
+      String practicalMark, String reviewstatus) {
+    int? total = int.tryParse(totalMark);
+    int? theory = int.tryParse(theoryMark);
+    int? practical = int.tryParse(practicalMark);
+
+    if (total == null || theory == null || practical == null) {
+      return Colors.red;
+    }
+
+    if (theory < 5 || practical < 5) {
+      return Colors.blue;
+    } else if (reviewstatus == 'Task Not Completed') {
+      return Colors.red;
+    } else if (total >= 5 && total <= 10) {
+      return Colors.orange;
+    } else if (total > 10 && total <= 13) {
+      return Colors.yellow;
+    } else {
+      return Colors.green;
+    }
   }
 }

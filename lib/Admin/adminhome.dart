@@ -3,7 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Adminhome extends StatefulWidget {
-  const Adminhome({Key? key,}) : super(key: key);
+  const Adminhome({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<Adminhome> createState() => _AdminhomeState();
@@ -83,7 +85,9 @@ class _AdminhomeState extends State<Adminhome> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SizedBox(height: 10,),
+                                const SizedBox(
+                                  height: 10,
+                                ),
                                 Center(
                                   child: Text(
                                     'Batch',

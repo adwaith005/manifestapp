@@ -41,21 +41,14 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> Timetaking() async {
     await Future.delayed(const Duration(seconds: 5));
-
-    // Store the context in a variable
     BuildContext? localContext = context;
-
-    // Check if the user is already logged in
     User? user = FirebaseAuth.instance.currentUser;
-
     if (user != null) {
-      // If user is logged in, navigate to MyBottomNavigationBar
       Navigator.pushReplacement(
         localContext,
         MaterialPageRoute(builder: (localContext) => MyBottomNavigationBar()),
       );
     } else {
-      // If user is not logged in, navigate to LandingPage
       Navigator.pushReplacement(
         localContext,
         MaterialPageRoute(builder: (localContext) => Landingpage()),

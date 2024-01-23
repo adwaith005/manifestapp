@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String uid;
@@ -88,22 +89,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             padding: const EdgeInsets.only(left: 30),
                             child: Text(
                               name,
-                              style: const TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
+                              style: TextStyle(
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontFamily: GoogleFonts.inter().fontFamily),
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left: 30),
                             child: Text(
                               domain,
-                              style: const TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey,
-                              ),
+                              style: TextStyle(
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey,
+                                  fontFamily: GoogleFonts.poppins().fontFamily),
                             ),
                           ),
                         ],
@@ -136,29 +137,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       Text(
                         'Batch: $batch',
-                        style: const TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF585858),
-                        ),
+                        style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF585858),
+                            fontFamily: GoogleFonts.inter().fontFamily),
                       ),
                       const SizedBox(height: 5),
                       Text(
                         'Email: $email',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey,
+                            fontFamily: GoogleFonts.inter().fontFamily),
                       ),
                       const SizedBox(height: 5),
                       Text(
                         'Phone no: $phoneNo',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey,
+                            fontFamily: GoogleFonts.inter().fontFamily),
                       ),
                     ],
                   ),
