@@ -119,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 .where((week) =>
                                     week.id.toLowerCase().contains(_searchTerm))
                                 .toList();
-                
+
                             return GridView.builder(
                               gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
@@ -133,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               itemBuilder: (context, index) {
                                 var weekDocument = filteredWeeks[index];
                                 var weekNumber = weekDocument.id;
-                            
+
                                 return GestureDetector(
                                   onTap: () {
                                     Navigator.push(

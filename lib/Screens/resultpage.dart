@@ -36,11 +36,11 @@ class _ResultpageState extends State<Resultpage> {
     weekNumber = widget.weekNumber;
     loadExistingData();
   }
+  
 
   Future<void> _refreshData() async {
     await loadExistingData();
   }
-
   Future<void> loadExistingData() async {
     try {
       DocumentSnapshot weekSnapshot = await FirebaseFirestore.instance
@@ -600,12 +600,17 @@ class _ResultpageState extends State<Resultpage> {
     int? total = int.tryParse(totalMark);
     int? theory = int.tryParse(theoryMark);
     int? practical = int.tryParse(practicalMark);
+    String?  reviewStatus = reviewstatus;
+    print(reviewstatus);
+    print(total);
+    print(theory);
+    print(practical);
 
     if (total == null || theory == null || practical == null) {
-      return Colors.red;
+      return Colors.blue;
     }
 
-    if (theory < 5 || practical < 5) {
+    if (theory < 5 || practical < 5 || reviewStatus == 'Week Repeat') {
       return Colors.blue;
     } else if (reviewstatus == 'Task Not Completed') {
       return Colors.red;
