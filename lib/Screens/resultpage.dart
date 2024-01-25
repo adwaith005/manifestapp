@@ -36,11 +36,11 @@ class _ResultpageState extends State<Resultpage> {
     weekNumber = widget.weekNumber;
     loadExistingData();
   }
-  
 
   Future<void> _refreshData() async {
     await loadExistingData();
   }
+
   Future<void> loadExistingData() async {
     try {
       DocumentSnapshot weekSnapshot = await FirebaseFirestore.instance
@@ -401,9 +401,9 @@ class _ResultpageState extends State<Resultpage> {
                               child: Text(
                                 'Seminar',
                                 style: TextStyle(
-                                  color: const Color(0xFF585858),
+                                  color: const Color(0xFF1F1F1F),
                                   fontFamily: GoogleFonts.inter().fontFamily,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.w600,
                                   fontSize: isSmallScreen ? 16 : 12,
                                 ),
                               ),
@@ -532,7 +532,7 @@ class _ResultpageState extends State<Resultpage> {
                   children: [
                     SingleChildScrollView(
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(10.0),
                         child: Container(
                           height: 260,
                           width: 365,
@@ -597,29 +597,40 @@ class _ResultpageState extends State<Resultpage> {
 
   Color getReviewStatusColor(String totalMark, String theoryMark,
       String practicalMark, String reviewstatus) {
-    int? total = int.tryParse(totalMark);
-    int? theory = int.tryParse(theoryMark);
-    int? practical = int.tryParse(practicalMark);
-    String?  reviewStatus = reviewstatus;
-    print(reviewstatus);
-    print(total);
-    print(theory);
-    print(practical);
+    double? totalMarkValue = double.tryParse(totalMark);
+    double? theoryMarkValue = double.tryParse(theoryMark);
+    double? practicalMarkValue = double.tryParse(practicalMark);
 
-    if (total == null || theory == null || practical == null) {
-      return Colors.blue;
+    if (totalMarkValue == null) {
+      print('Error parsing totalMark: $totalMark');
+    }
+    if (theoryMarkValue == null) {
+      print('Error parsing theoryMark: $theoryMark');
+    }
+    if (practicalMarkValue == null) {
+      print('Error parsing practicalMark: $practicalMark');
     }
 
-    if (theory < 5 || practical < 5 || reviewStatus == 'Week Repeat') {
-      return Colors.blue;
+    if (totalMarkValue == null ||
+        theoryMarkValue == null ||
+        practicalMarkValue == null) {
+      // Handle the case where parsing fails (one or more values are not valid numbers)
+      return Colors
+          .grey; // or any other color you want to use for this scenario
+    }
+
+    if (theoryMarkValue < 5 ||
+        practicalMarkValue < 5 ||
+        reviewstatus == 'Week Repeat') {
+      return Color(0xFF00ffff);
     } else if (reviewstatus == 'Task Not Completed') {
-      return Colors.red;
-    } else if (total >= 5 && total <= 10) {
-      return Colors.orange;
-    } else if (total > 10 && total <= 13) {
-      return Colors.yellow;
+      return Color(0xFFff0000);
+    } else if (totalMarkValue >= 5 && totalMarkValue <= 10) {
+      return Color(0xFFff9900);
+    } else if (totalMarkValue > 10 && totalMarkValue <= 13) {
+      return Color(0xFFffff00);
     } else {
-      return Colors.green;
+      return Color(0xFF00ff00);
     }
   }
 }

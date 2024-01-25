@@ -15,7 +15,7 @@ class _SearchbarState extends State<Searchbar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 10.0),
+      margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
       child: TextField(
         style: const TextStyle(color: Colors.black),
         controller: _searchTextController,

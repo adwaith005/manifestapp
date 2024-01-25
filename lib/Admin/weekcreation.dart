@@ -141,69 +141,71 @@ class WeekCreationPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Positioned(
-                    top: isSmallScreen
-                        ? MediaQuery.of(context).size.height / 3
-                        : MediaQuery.of(context).size.height / 4,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    child: SingleChildScrollView(
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 16, right: 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              StreamBuilder(
-                                stream: FirebaseFirestore.instance
-                                    .collection("students")
-                                    .doc(studentId)
-                                    .collection('weeks')
-                                    .snapshots(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    var weekData = (snapshot.data)?.docs;
-                                    if (weekData != null &&
-                                        weekData.isNotEmpty) {
-                                      return GridView.builder(
-                                        gridDelegate:
-                                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount: 2,
-                                                crossAxisSpacing: 20.0,
-                                                mainAxisSpacing: 20.0,
-                                                childAspectRatio: 3 / 2.4),
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        itemCount: weekData.length,
-                                        itemBuilder: (context, index) {
-                                          var weekDocument = weekData[index];
-                                          var weekNumber = weekDocument.id;
-                                          return buildWeekTile(
-                                              context,
-                                              studentId,
-                                              weekNumber,
-                                              weekDocument);
-                                        },
-                                      );
+                  SingleChildScrollView(
+                    child: Positioned(
+                      top: isSmallScreen
+                          ? MediaQuery.of(context).size.height / 3
+                          : MediaQuery.of(context).size.height / 4,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: SingleChildScrollView(
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.only(),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 16, right: 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                StreamBuilder(
+                                  stream: FirebaseFirestore.instance
+                                      .collection("students")
+                                      .doc(studentId)
+                                      .collection('weeks')
+                                      .snapshots(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      var weekData = (snapshot.data)?.docs;
+                                      if (weekData != null &&
+                                          weekData.isNotEmpty) {
+                                        return GridView.builder(
+                                          gridDelegate:
+                                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                                  crossAxisCount: 2,
+                                                  crossAxisSpacing: 20.0,
+                                                  mainAxisSpacing: 20.0,
+                                                  childAspectRatio: 3 / 2.4),
+                                          shrinkWrap: true,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          itemCount: weekData.length,
+                                          itemBuilder: (context, index) {
+                                            var weekDocument = weekData[index];
+                                            var weekNumber = weekDocument.id;
+                                            return buildWeekTile(
+                                                context,
+                                                studentId,
+                                                weekNumber,
+                                                weekDocument);
+                                          },
+                                        );
+                                      } else {
+                                        return const Center(
+                                          child: Text('No weeks available'),
+                                        );
+                                      }
                                     } else {
                                       return const Center(
-                                        child: Text('No weeks available'),
+                                        child: CircularProgressIndicator(),
                                       );
                                     }
-                                  } else {
-                                    return const Center(
-                                      child: CircularProgressIndicator(),
-                                    );
-                                  }
-                                },
-                              )
-                            ],
+                                  },
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),

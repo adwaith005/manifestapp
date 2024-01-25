@@ -250,7 +250,7 @@ class _BatchesState extends State<Batches> {
                 );
               },
               label: 'Add Student',
-              labelStyle: TextStyle(fontSize: 16.0),
+              labelStyle: const  TextStyle(fontSize: 16.0),
               labelBackgroundColor: Colors.white,
             ),
           ],
@@ -260,38 +260,11 @@ class _BatchesState extends State<Batches> {
     );
   }
 
-  void _showModalBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return ListView(
-          shrinkWrap: true,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Create Batch'),
-              onTap: () {
-                ShowModalBottomSheet.show(context, _formKey, _firebaseDatabase);
-              },
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
-              title: const Text('Add Student'),
-              onTap: () {},
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   void _showDeleteDialog(String batchNo) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext ctx) {
         return AlertDialog(
           title: const Text('Confirm Deletion'),
           content: Text('Do you want to delete the batch $batchNo?'),
@@ -305,7 +278,7 @@ class _BatchesState extends State<Batches> {
             TextButton(
               onPressed: () async {
                 await _firebaseDatabase.deleteBatch(batchNo);
-                Navigator.pop(context);
+                Navigator.pop(ctx);
               },
               child: const Text('Delete'),
             ),
