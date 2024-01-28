@@ -47,6 +47,8 @@ flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   image_path: "lib/images/logo.png"
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: "lib/images/logo_foreground.png"
   flutter_speed_dial: ^7.0.0
   hive: ^2.2.3
   hive_flutter: ^1.1.0
