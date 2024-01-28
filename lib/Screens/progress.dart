@@ -16,83 +16,79 @@ class _ProgressScreenState extends State<ProgressScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: StreamBuilder<QuerySnapshot>(
+      body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: FirebaseFirestore.instance
             .collection('students')
             .doc(widget.uid)
             .collection('weeks')
             .snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        builder: (context,
+            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (!snapshot.hasData) {
             return const CircularProgressIndicator();
           }
 
-          List<QueryDocumentSnapshot> weeks = snapshot.data!.docs;
+          List<QueryDocumentSnapshot<Map<String, dynamic>>> weeks =
+              snapshot.data!.docs;
 
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: BarChart(
-              BarChartData(
-                gridData: const FlGridData(show: false),
-                titlesData: const FlTitlesData(show: false),
-                borderData: FlBorderData(show: true),
-                barGroups: List.generate(
-                  weeks.length,
-                  (index) {
-                    var week = weeks[index].data() as Map<String, dynamic>;
+          List<FlSpot> spots = List.generate(
+            weeks.length,
+            (index) {
+              var week = weeks[index].data();
+              var totalMark =
+                  double.tryParse(week['totalMark'] ?? '0.0') ?? 0.0;
 
-                    if (week.containsKey('totalMark')) {
-                      var totalMarkString = week['totalMark'] ?? "0";
+              return FlSpot(index.toDouble(), totalMark);
+            },
+          );
 
-                      // Check if the value is a valid double
-                      if (totalMarkString is String &&
-                          double.tryParse(totalMarkString) != null) {
-                        var totalMark = double.parse(totalMarkString);
-
-                        // Determine the section based on the week index
-                        String section;
-                        if (index >= 0 && index <= 9) {
-                          section = 'Week 1-10';
-                        } else if (index >= 10 && index <= 19) {
-                          section = 'Week 11-20';
-                        } else {
-                          section = 'Other Weeks';
-                        }
-                        return BarChartGroupData(
-                          x: index,
-                          barRods: [
-                            BarChartRodData(
-                              toY: totalMark, // Set the toY property
-                              color: Colors.blue,
-                              width: 20,
-                            ),
-                          ],
-                          showingTooltipIndicators: [0],
-                        );
-                      } else {
-                        // Handle the case where 'totalMark' is not a valid double
-                        return BarChartGroupData(x: index, barRods: []);
-                      }
-                    } else {
-                      // Handle the case where 'totalMark' is not present
-                      return BarChartGroupData(x: index, barRods: []);
-                    }
-                  },
-                ),
-                groupsSpace:
-                    20.0, // Adjust this value for the space between groups
-                barTouchData: BarTouchData(
-                  touchTooltipData: BarTouchTooltipData(
-                    tooltipBgColor: Colors.blueAccent,
-                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                      return BarTooltipItem(
-                        rod.toY!.round().toString(),
-                        TextStyle(color: Colors.white),
-                      );
-                    },
-                  ),
+          return LineChart(
+            LineChartData(
+              gridData: const FlGridData(show: true),
+              titlesData: const FlTitlesData(
+                show: true,
+                leftTitles: AxisTitles(),
+                bottomTitles: AxisTitles(),
+                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              ),
+              borderData: FlBorderData(
+                show: true,
+                border: Border.all(
+                  color: const Color(0xff37434d),
+                  width: 1,
                 ),
               ),
+              lineBarsData: [
+                LineChartBarData(
+                  spots: spots,
+                  isCurved: true,
+                  color: Colors.blue,
+                  dotData: const FlDotData(show: true, ), // Set show to false
+                  belowBarData: BarAreaData(
+                    show: true,
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment(0.8, 1),
+                      colors: <Color>[
+                        Color(0xff1f005c),
+                        Color(0xff5b0060),
+                        Color(0xff870160),
+                        Color(0xffac255e),
+                        Color(0xffca485c),
+                        Color(0xffe16b5c),
+                        Color(0xfff39060),
+                        Color(0xffffb56b),
+                      ],
+                      tileMode: TileMode.clamp,
+                    ),
+                  ),
+                ),
+              ],
+              minX: 0,
+              maxX: weeks.length.toDouble() - 1,
+              minY: 0,
+              maxY: 30, // Adjust this value based on your data
             ),
           );
         },

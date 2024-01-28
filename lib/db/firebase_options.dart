@@ -44,13 +44,12 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDWRk46W6SR-0iPd2t3cxXIdXb34IZnOBk',
-    appId: '1:546736889925:web:b1f6fd40d8a740584e032c',
-    messagingSenderId: '546736889925',
-    projectId: 'themanifestapp-dafd1',
-    authDomain: 'themanifestapp-dafd1.firebaseapp.com',
-    storageBucket: 'themanifestapp-dafd1.appspot.com',
-  );
+      apiKey: "AIzaSyDWRk46W6SR-0iPd2t3cxXIdXb34IZnOBk",
+      authDomain: "themanifestapp-dafd1.firebaseapp.com",
+      projectId: "themanifestapp-dafd1",
+      storageBucket: "themanifestapp-dafd1.appspot.com",
+      messagingSenderId: "546736889925",
+      appId: "1:546736889925:web:c4cea8cf902bc1444e032c");
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBbhXMhAtQBfC-GUzD273PalF02RUepyYQ',

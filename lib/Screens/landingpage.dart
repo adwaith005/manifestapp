@@ -36,7 +36,7 @@ class Landingpage extends StatelessWidget {
             ),
             Image.asset('lib/images/landingpagephoto.png'),
             Padding(
-              padding: const EdgeInsets.only(left: 26),
+              padding: const EdgeInsets.only(left: 26,right: 20),
               child: Text(
                 "Where we turn 'Are we there yet?' into 'We're almost there!' Get ready to track progress like a pro and turn milestones into smile-stones!",
                 style: TextStyle(
@@ -47,7 +47,7 @@ class Landingpage extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20),
-              child:Container(
+              child: Container(
                 width: 338,
                 height: 50,
                 padding: const EdgeInsets.all(10),
@@ -57,7 +57,7 @@ class Landingpage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: ElevatedButton(
-                  onPressed: () { 
+                  onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -66,8 +66,7 @@ class Landingpage extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(
-                        0xFF090B0B), 
+                    backgroundColor: const Color(0xFF090B0B),
                   ),
                   child: Text(
                     'Get Started',

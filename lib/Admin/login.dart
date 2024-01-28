@@ -21,8 +21,9 @@ class _AdminloginState extends State<Adminlogin> {
             left: 0,
             right: 0,
             bottom: isSmallScreen
-                ? MediaQuery.of(context).size.height / 4
-                : MediaQuery.of(context).size.height / 3,
+              
+                ? MediaQuery.of(context).size.height / 4.5
+                : MediaQuery.of(context).size.height / 4,
             child: Container(
               color: Colors.white,
               child: Column(
@@ -43,8 +44,8 @@ class _AdminloginState extends State<Adminlogin> {
           ),
           Positioned(
             top: isSmallScreen
-                ? MediaQuery.of(context).size.height / 4.5
-                : MediaQuery.of(context).size.height / 4,
+                ? MediaQuery.of(context).size.height / 4
+                : MediaQuery.of(context).size.height / 4.3,
             left: 0,
             right: 0,
             bottom: 0,

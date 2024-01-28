@@ -114,10 +114,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         .toList();
                     return SliverGrid(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: isSmallScreen ? 2 : 1,
+                        crossAxisCount: isSmallScreen ? 2 : 2,
                         crossAxisSpacing: isSmallScreen ? 20 : 20.0,
-                        mainAxisSpacing: isSmallScreen ? 20: 20.0,
-                        childAspectRatio: isSmallScreen ? 3 / 2 : 3 / 2,
+                        mainAxisSpacing: isSmallScreen ? 20 : 20.0,
+                        childAspectRatio: isSmallScreen ? 3 / 2 : 4 / 1,
                       ),
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {

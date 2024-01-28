@@ -601,36 +601,27 @@ class _ResultpageState extends State<Resultpage> {
     double? theoryMarkValue = double.tryParse(theoryMark);
     double? practicalMarkValue = double.tryParse(practicalMark);
 
-    if (totalMarkValue == null) {
-      print('Error parsing totalMark: $totalMark');
-    }
-    if (theoryMarkValue == null) {
-      print('Error parsing theoryMark: $theoryMark');
-    }
-    if (practicalMarkValue == null) {
-      print('Error parsing practicalMark: $practicalMark');
-    }
+
 
     if (totalMarkValue == null ||
         theoryMarkValue == null ||
         practicalMarkValue == null) {
-      // Handle the case where parsing fails (one or more values are not valid numbers)
       return Colors
-          .grey; // or any other color you want to use for this scenario
+          .grey; 
     }
-
+print(reviewstatus);
     if (theoryMarkValue < 5 ||
         practicalMarkValue < 5 ||
         reviewstatus == 'Week Repeat') {
-      return Color(0xFF00ffff);
-    } else if (reviewstatus == 'Task Not Completed') {
-      return Color(0xFFff0000);
+      return const Color(0xFF00ffff);
+    } else if (reviewstatus == 'Task Incomplete') {
+      return const Color(0xFFff0000);
     } else if (totalMarkValue >= 5 && totalMarkValue <= 10) {
-      return Color(0xFFff9900);
+      return const Color(0xFFff9900);
     } else if (totalMarkValue > 10 && totalMarkValue <= 13) {
-      return Color(0xFFffff00);
+      return const Color(0xFFffff00);
     } else {
-      return Color(0xFF00ff00);
+      return const Color(0xFF00ff00);
     }
   }
 }
