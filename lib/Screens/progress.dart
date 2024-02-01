@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 
+class WeekData {
+  final double totalMark;
+  final String reviewName;
+
+  WeekData(this.totalMark, this.reviewName);
+}
+
 class ProgressScreen extends StatefulWidget {
   final String uid;
 
@@ -31,14 +38,17 @@ class _ProgressScreenState extends State<ProgressScreen> {
           List<QueryDocumentSnapshot<Map<String, dynamic>>> weeks =
               snapshot.data!.docs;
 
-          List<FlSpot> spots = List.generate(
-            weeks.length,
-            (index) {
-              var week = weeks[index].data();
-              var totalMark =
-                  double.tryParse(week['totalMark'] ?? '0.0') ?? 0.0;
+          List<WeekData> weekDataList = weeks.map((week) {
+            var data = week.data();
+            var totalMark = double.tryParse(data['totalMark'] ?? '0.0') ?? 0.0;
+            var reviewName = data['reviewName'] ?? 'Not uploaded';
+            return WeekData(totalMark, reviewName);
+          }).toList();
 
-              return FlSpot(index.toDouble(), totalMark);
+          List<FlSpot> spots = List.generate(
+            weekDataList.length,
+            (index) {
+              return FlSpot(index.toDouble(), weekDataList[index].totalMark);
             },
           );
 
@@ -64,7 +74,9 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   spots: spots,
                   isCurved: true,
                   color: Colors.blue,
-                  dotData: const FlDotData(show: true, ), // Set show to false
+                  dotData: const FlDotData(
+                    show: true,
+                  ),
                   belowBarData: BarAreaData(
                     show: true,
                     gradient: const LinearGradient(
@@ -86,9 +98,24 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 ),
               ],
               minX: 0,
-              maxX: weeks.length.toDouble() - 1,
+              maxX: weekDataList.length.toDouble() - 1,
               minY: 0,
               maxY: 30, // Adjust this value based on your data
+              lineTouchData: LineTouchData(
+                touchTooltipData: LineTouchTooltipData(
+                  tooltipBgColor: Colors.blueAccent,
+                  getTooltipItems: (List<LineBarSpot> touchedSpots) {
+                    return touchedSpots.map((barSpot) {
+                      final flSpot = spots[barSpot.spotIndex];
+                      final weekData = weekDataList[barSpot.spotIndex];
+                      return LineTooltipItem(
+                        'Total Mark: ${flSpot.y}\nReview Name: ${weekData.reviewName}',
+                       const  TextStyle(color: Colors.white),
+                      );
+                    }).toList();
+                  },
+                ),
+              ),
             ),
           );
         },

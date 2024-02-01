@@ -51,6 +51,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+    bool isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
+    double fontSize = isSmallScreen ? 24 : 18;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -62,12 +65,13 @@ class _HomeScreenState extends State<HomeScreen> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.symmetric(
-                    horizontal: isSmallScreen ? 10 : 25,
-                    vertical: isSmallScreen ? 10 : 15),
+                  horizontal: isSmallScreen ? 10 : 25,
+                  vertical: isSmallScreen ? 10 : 15,
+                ),
                 child: Text(
                   "Hello $name",
                   style: TextStyle(
-                    fontSize: isSmallScreen ? 24 : 18,
+                    fontSize: fontSize,
                     color: const Color(0xFF414141),
                     fontWeight: FontWeight.w900,
                     fontFamily: GoogleFonts.inter().fontFamily,
@@ -114,7 +118,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         .toList();
                     return SliverGrid(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: isSmallScreen ? 2 : 2,
+                        crossAxisCount: isPortrait
+                            ? (isSmallScreen ? 2 : 2)
+                            : (isSmallScreen ? 1 : 2),
                         crossAxisSpacing: isSmallScreen ? 20 : 20.0,
                         mainAxisSpacing: isSmallScreen ? 20 : 20.0,
                         childAspectRatio: isSmallScreen ? 3 / 2 : 4 / 1,
@@ -177,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             : weekNumber,
                                         style: TextStyle(
                                           color: Colors.black,
-                                          fontSize: 20,
+                                          fontSize: 30,
                                           fontFamily:
                                               GoogleFonts.poppins().fontFamily,
                                           fontWeight: FontWeight.bold,
