@@ -109,7 +109,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                       final flSpot = spots[barSpot.spotIndex];
                       final weekData = weekDataList[barSpot.spotIndex];
                       return LineTooltipItem(
-                        'Total Mark: ${flSpot.y}\nReview Name: ${weekData.reviewName}',
+                        'Total Mark: ${flSpot.y}\nWEEK: ${weekData.reviewName}',
                        const  TextStyle(color: Colors.white),
                       );
                     }).toList();

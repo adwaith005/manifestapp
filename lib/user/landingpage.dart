@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:themanifestapp/Screens/login.dart';
+import 'package:themanifestapp/user/login.dart';
 
 class Landingpage extends StatelessWidget {
   const Landingpage({super.key});
@@ -18,7 +18,7 @@ class Landingpage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Image.asset(
-                  'lib/images/logoin.png',
+                  'lib/assets/logoin.png',
                   height: 40,
                 )
               ],
@@ -34,7 +34,7 @@ class Landingpage extends StatelessWidget {
                     fontWeight: FontWeight.bold),
               ),
             ),
-            Image.asset('lib/images/landingpagephoto.png'),
+            Image.asset('lib/assets/landingpagephoto.png'),
             Padding(
               padding: const EdgeInsets.only(left: 26,right: 20),
               child: Text(

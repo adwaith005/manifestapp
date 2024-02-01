@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:themanifestapp/Screens/resultpage.dart';
+import 'package:themanifestapp/user/resultpage.dart';
 import 'package:themanifestapp/widgets/search.dart';
 
 class HomeScreen extends StatefulWidget {

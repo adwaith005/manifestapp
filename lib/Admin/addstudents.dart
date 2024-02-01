@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:themanifestapp/db/firebasedatabase.dart';
 
 class AddStudent extends StatefulWidget {
-  const AddStudent({Key? key});
+  const AddStudent({super.key,});
 
   @override
   State<AddStudent> createState() => _AddStudentState();

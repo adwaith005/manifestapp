@@ -5,10 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:themanifestapp/Screens/home.dart';
-import 'package:themanifestapp/Screens/landingpage.dart';
-import 'package:themanifestapp/Screens/profile.dart';
-import 'package:themanifestapp/Screens/progress.dart';
+import 'package:themanifestapp/user/home.dart';
+import 'package:themanifestapp/user/landingpage.dart';
+import 'package:themanifestapp/user/profile.dart';
+import 'package:themanifestapp/user/progress.dart';
 
 class MyBottomNavigationBar extends StatefulWidget {
   const MyBottomNavigationBar({

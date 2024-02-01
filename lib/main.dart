@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:themanifestapp/Screens/splash.dart';
+import 'package:themanifestapp/user/splash.dart';
 import 'package:themanifestapp/db/firebase_options.dart';
 
 void main() async {
