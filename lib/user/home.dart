@@ -116,89 +116,99 @@ class _HomeScreenState extends State<HomeScreen> {
                         .where((week) =>
                             week.id.toLowerCase().contains(_searchTerm))
                         .toList();
-                    return SliverGrid(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: isPortrait
-                            ? (isSmallScreen ? 2 : 2)
-                            : (isSmallScreen ? 1 : 2),
-                        crossAxisSpacing: isSmallScreen ? 20 : 20.0,
-                        mainAxisSpacing: isSmallScreen ? 20 : 20.0,
-                        childAspectRatio: isSmallScreen ? 3 / 2 : 4 / 1,
-                      ),
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          var weekDocument = filteredWeeks[index];
-                          var weekNumber = weekDocument.id;
 
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => Resultpage(
-                                    uid: widget.uid,
-                                    weekNumber: weekNumber,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFEFEFEF),
-                                borderRadius: BorderRadius.circular(9.0),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 1,
-                                    blurRadius: 5,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ],
-                              ),
-                              child: ListTile(
-                                contentPadding:
-                                    const EdgeInsets.symmetric(horizontal: 0.0),
-                                title: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(height: 10),
-                                    Center(
-                                      child: Text(
-                                        'Week',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 20,
-                                          fontFamily:
-                                              GoogleFonts.poppins().fontFamily,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
+                    if (filteredWeeks.isNotEmpty) {
+                      return SliverGrid(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: isPortrait
+                              ? (isSmallScreen ? 2 : 2)
+                              : (isSmallScreen ? 1 : 2),
+                          crossAxisSpacing: isSmallScreen ? 20 : 20.0,
+                          mainAxisSpacing: isSmallScreen ? 20 : 20.0,
+                          childAspectRatio: isSmallScreen ? 3 / 2 : 4 / 1,
+                        ),
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            var weekDocument = filteredWeeks[index];
+                            var weekNumber = weekDocument.id;
+
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Resultpage(
+                                      uid: widget.uid,
+                                      weekNumber: weekNumber,
                                     ),
-                                    const SizedBox(height: 3),
-                                    Center(
-                                      child: Text(
-                                        weekNumber.isEmpty
-                                            ? 'No Week'
-                                            : weekNumber,
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 30,
-                                          fontFamily:
-                                              GoogleFonts.poppins().fontFamily,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFEFEFEF),
+                                  borderRadius: BorderRadius.circular(9.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 1,
+                                      blurRadius: 5,
+                                      offset: const Offset(0, 3),
                                     ),
                                   ],
                                 ),
+                                child: ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 0.0),
+                                  title: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 10),
+                                      Center(
+                                        child: Text(
+                                          'Week',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 20,
+                                            fontFamily: GoogleFonts.poppins()
+                                                .fontFamily,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 3),
+                                      Center(
+                                        child: Text(
+                                          weekNumber.isEmpty
+                                              ? 'No Week'
+                                              : weekNumber,
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 30,
+                                            fontFamily: GoogleFonts.poppins()
+                                                .fontFamily,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                        childCount: filteredWeeks.length,
-                      ),
-                    );
+                            );
+                          },
+                          childCount: filteredWeeks.length,
+                        ),
+                      );
+                    } else {
+                      return const  SliverToBoxAdapter(
+                        child: Center(
+                          child: Text('Nothing found'),
+                        ),
+                      );
+                    }
                   } else {
                     return const SliverToBoxAdapter(
                       child: Center(
@@ -207,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }
                 } else {
-                  return const SliverToBoxAdapter(
+                  return const  SliverToBoxAdapter(
                     child: Center(
                       child: CircularProgressIndicator(),
                     ),

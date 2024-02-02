@@ -71,7 +71,8 @@ class _BatchesState extends State<Batches> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => StudentList(
-                                  batchNo: data['batch'] ?? 'Default Batch'),
+                                batchNo: data['batch'] ?? 'Default Batch',
+                              ),
                             ),
                           );
                         },
@@ -94,108 +95,113 @@ class _BatchesState extends State<Batches> {
                                 ],
                               ),
                               child: ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 2.0),
-                                  title: Column(
+                                contentPadding:
+                                    const EdgeInsets.symmetric(horizontal: 2.0),
+                                title: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Center(
+                                      child: Text(
+                                        'Batch',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 20,
+                                          fontFamily:
+                                              GoogleFonts.poppins().fontFamily,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Center(
+                                      child: Text(
+                                        data['batch'] ?? 'Default Batch',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 30,
+                                          fontFamily:
+                                              GoogleFonts.poppins().fontFamily,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                          MainAxisAlignment.center,
                                       children: [
-                                        Center(
-                                          child: Text(
-                                            'Batch',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 20,
-                                              fontFamily: GoogleFonts.poppins()
-                                                  .fontFamily,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 3),
-                                        Center(
-                                          child: Text(
-                                            data['batch'] ?? 'Default Batch',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 30,
-                                              fontFamily: GoogleFonts.poppins()
-                                                  .fontFamily,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            FutureBuilder<int>(
-                                              future: getNumberOfStudents(
-                                                  data['batch']),
-                                              builder: (context, snapshot) {
-                                                if (snapshot.connectionState ==
-                                                    ConnectionState.waiting) {
-                                                  return const Text(
-                                                    'Loading...',
-                                                    style: TextStyle(
+                                        FutureBuilder<int>(
+                                          future: getNumberOfStudents(
+                                              data['batch']),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return const Text(
+                                                'Loading...',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                ),
+                                              );
+                                            } else if (snapshot.hasError) {
+                                              return const Text(
+                                                'Error',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.red,
+                                                ),
+                                              );
+                                            } else {
+                                              return Container(
+                                                width: 166,
+                                                height: 30,
+                                                decoration: const BoxDecoration(
+                                                  color: Color(0xFF090B0B),
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                    bottomLeft:
+                                                        Radius.circular(4),
+                                                    bottomRight:
+                                                        Radius.circular(4),
+                                                  ),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    '${snapshot.data} Students',
+                                                    style: const TextStyle(
                                                       fontSize: 12,
                                                       fontWeight:
                                                           FontWeight.bold,
-                                                      color: Colors.black,
+                                                      color: Colors.white,
                                                     ),
-                                                  );
-                                                } else if (snapshot.hasError) {
-                                                  return const Text(
-                                                    'Error',
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.red,
-                                                    ),
-                                                  );
-                                                } else {
-                                                  return Container(
-                                                    width: 166,
-                                                    height: 30,
-                                                    decoration:
-                                                        const BoxDecoration(
-                                                      color: Color(0xFF090B0B),
-                                                      borderRadius:
-                                                          BorderRadius.only(
-                                                        bottomLeft:
-                                                            Radius.circular(4),
-                                                        bottomRight:
-                                                            Radius.circular(4),
-                                                      ),
-                                                    ),
-                                                    child: Center(
-                                                      child: Text(
-                                                        '${snapshot.data} Students',
-                                                        style: const TextStyle(
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: Colors.white,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  );
-                                                }
-                                              },
-                                            ),
-                                          ],
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          },
                                         ),
-                                      ])),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
                     );
                   }
+                }
+
+                if (batchWidgets.isEmpty) {
+                  return const SliverToBoxAdapter(
+                    child: Center(
+                      child: Text('No batches available'),
+                    ),
+                  );
                 }
 
                 return SliverGrid(
@@ -250,7 +256,7 @@ class _BatchesState extends State<Batches> {
                 );
               },
               label: 'Add Student',
-              labelStyle: const  TextStyle(fontSize: 16.0),
+              labelStyle: const TextStyle(fontSize: 16.0),
               labelBackgroundColor: Colors.white,
             ),
           ],
@@ -259,7 +265,6 @@ class _BatchesState extends State<Batches> {
       ),
     );
   }
-
 
   void _showDeleteDialog(String batchNo) {
     showDialog(
@@ -278,6 +283,7 @@ class _BatchesState extends State<Batches> {
             TextButton(
               onPressed: () async {
                 await _firebaseDatabase.deleteBatch(batchNo);
+                // ignore: use_build_context_synchronously
                 Navigator.pop(ctx);
               },
               child: const Text('Delete'),

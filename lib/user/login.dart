@@ -245,7 +245,6 @@ class _LoginScreenState extends State<LoginScreen> {
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-      print('dklgjadg');
       User? user = userCredential.user;
 
       if (user != null) {

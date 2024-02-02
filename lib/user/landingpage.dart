@@ -18,7 +18,7 @@ class Landingpage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Image.asset(
-                  'lib/assets/logoin.png',
+                  'lib/images/logoin.png',
                   height: 40,
                 )
               ],
@@ -34,7 +34,7 @@ class Landingpage extends StatelessWidget {
                     fontWeight: FontWeight.bold),
               ),
             ),
-            Image.asset('lib/assets/landingpagephoto.png'),
+            Image.asset('lib/images/landingpagephoto.png'),
             Padding(
               padding: const EdgeInsets.only(left: 26,right: 20),
               child: Text(
