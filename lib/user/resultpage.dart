@@ -120,11 +120,12 @@ class _ResultpageState extends State<Resultpage> {
                 ),
               ),
               Row(
+                
                 children: [
                   Padding(
                     padding: EdgeInsets.only(
                         top: isSmallScreen ? 20 : 25,
-                        left: isSmallScreen ? 15 : 15),
+                        left: isSmallScreen ? 20 : 15),
                     child: Text(
                       reviewName,
                       style: TextStyle(
@@ -138,11 +139,13 @@ class _ResultpageState extends State<Resultpage> {
                 ],
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment:  CrossAxisAlignment.start,
                 children: [
                   Center(
                     child: Padding(
                       padding: EdgeInsets.only(
-                          left: isSmallScreen ? 15 : 10,
+                          left: isSmallScreen ? 0 : 10,
                           top: isSmallScreen ? 5 : 20),
                       child: Container(
                         decoration: BoxDecoration(
@@ -170,10 +173,11 @@ class _ResultpageState extends State<Resultpage> {
                 ],
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Padding(
                     padding: EdgeInsets.only(
-                        left: isSmallScreen ? 15 : 250,
+                        left: isSmallScreen ? 0 : 250,
                         top: isSmallScreen ? 30 : 10),
                     child: Container(
                       height: isSmallScreen ? 116 : 200,
@@ -241,7 +245,7 @@ class _ResultpageState extends State<Resultpage> {
                   Padding(
                     padding: EdgeInsets.only(
                       top: isSmallScreen ? 25 : 10,
-                      left: isSmallScreen ? 40 : 450,
+                      left: isSmallScreen ? 0 : 450,
                     ),
                     child: SizedBox(
                       height: isSmallScreen ? 116 : 200,
@@ -334,10 +338,11 @@ class _ResultpageState extends State<Resultpage> {
                 ],
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Padding(
                     padding: EdgeInsets.only(
-                        left: isSmallScreen ? 15 : 250,
+                        left: isSmallScreen ? 0 : 250,
                         top: isSmallScreen ? 25 : 30),
                     child: Container(
                       height: isSmallScreen ? 116 : 200,
@@ -380,7 +385,7 @@ class _ResultpageState extends State<Resultpage> {
                   ),
                   Padding(
                     padding: EdgeInsets.only(
-                        left: isSmallScreen ? 40 : 450,
+                        left: isSmallScreen ? 0 : 450,
                         top: isSmallScreen ? 25 : 10),
                     child: Container(
                 height: isSmallScreen ? 116 : 200,
@@ -456,10 +461,11 @@ class _ResultpageState extends State<Resultpage> {
                 ),
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Padding(
                     padding: EdgeInsets.only(
-                        left: isSmallScreen ? 15 : 250,
+                        left: isSmallScreen ? 0 : 250,
                         top: isSmallScreen ? 10 : 10),
                     child: Container(
                       height: isSmallScreen ? 90 : 200,
@@ -491,7 +497,7 @@ class _ResultpageState extends State<Resultpage> {
                   ),
                   Padding(
                     padding: EdgeInsets.only(
-                        left: isSmallScreen ? 40 : 450,
+                        left: isSmallScreen ? 0 : 450,
                         top: isSmallScreen ? 10 : 10),
                     child: Container(
                       height: isSmallScreen ? 90 : 200,
@@ -525,7 +531,8 @@ class _ResultpageState extends State<Resultpage> {
               ),
               Padding(
                 padding: EdgeInsets.only(top: isSmallScreen ? 20 : 30),
-                child: Column(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SingleChildScrollView(
                       child: Padding(

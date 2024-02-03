@@ -57,7 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             top: 0,
             left: 0,
             right: 0,
-            bottom: MediaQuery.of(context).size.height / 2,
+            bottom: MediaQuery.of(context).size.height / 2.5,
             child: Container(
               color: Colors.black,
               child: Column(
@@ -116,7 +116,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           Positioned(
-            top: MediaQuery.of(context).size.height / 3.5,
+            top: MediaQuery.of(context).size.height / 3.0,
             left: 0,
             right: 0,
             bottom: 0,

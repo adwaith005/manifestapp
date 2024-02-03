@@ -106,6 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   .doc(widget.uid)
                   .collection('weeks')
                   .snapshots(),
+                  
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.active &&
                     snapshot.hasData &&
@@ -225,6 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
               },
             ),
+          
           ],
         ),
       ),

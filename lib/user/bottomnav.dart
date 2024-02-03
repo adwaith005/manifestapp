@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:themanifestapp/user/about.dart';
 import 'package:themanifestapp/user/home.dart';
 import 'package:themanifestapp/user/landingpage.dart';
 import 'package:themanifestapp/user/profile.dart';
@@ -212,7 +213,10 @@ class MenuDrawer extends StatelessWidget {
             leading: const Icon(Icons.help),
             title: const Text('About'),
             onTap: () {
-              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Aboutpage()),
+              );
             },
           ),
         ],

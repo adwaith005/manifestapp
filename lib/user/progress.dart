@@ -99,7 +99,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
               ],
               minX: 0,
               maxX: weekDataList.length.toDouble() - 1,
-              minY: 0,
+              minY:0,
               maxY: 30, // Adjust this value based on your data
               lineTouchData: LineTouchData(
                 touchTooltipData: LineTouchTooltipData(
