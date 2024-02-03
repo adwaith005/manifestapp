@@ -203,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       );
                     } else {
-                      return const  SliverToBoxAdapter(
+                      return const SliverToBoxAdapter(
                         child: Center(
                           child: Text('Nothing found'),
                         ),
@@ -217,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }
                 } else {
-                  return const  SliverToBoxAdapter(
+                  return const SliverToBoxAdapter(
                     child: Center(
                       child: CircularProgressIndicator(),
                     ),
