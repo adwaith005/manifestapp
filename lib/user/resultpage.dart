@@ -83,13 +83,17 @@ class _ResultpageState extends State<Resultpage> {
 
     return Scaffold(
       appBar: AppBar(
+        elevation: 3,
         title: Center(
-          child: Text(
-            'Manifest view',
-            style: TextStyle(
-              fontSize: isSmallScreen ? 13 : 23,
-              color: const Color(0xFFCBCBCB),
-              fontFamily: GoogleFonts.inter().fontFamily,
+          child: Padding(
+            padding: const EdgeInsets.only(right: 50),
+            child: Text(
+              'Manifest view',
+              style: TextStyle(
+                fontSize: isSmallScreen ? 13 : 23,
+                color: const Color(0xFFCBCBCB),
+                fontFamily: GoogleFonts.inter().fontFamily,
+              ),
             ),
           ),
         ),
@@ -120,12 +124,11 @@ class _ResultpageState extends State<Resultpage> {
                 ),
               ),
               Row(
-                
                 children: [
                   Padding(
                     padding: EdgeInsets.only(
                         top: isSmallScreen ? 20 : 25,
-                        left: isSmallScreen ? 20 : 15),
+                        left: isSmallScreen ? 10 : 15),
                     child: Text(
                       reviewName,
                       style: TextStyle(
@@ -140,7 +143,7 @@ class _ResultpageState extends State<Resultpage> {
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment:  CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
                     child: Padding(
@@ -154,7 +157,7 @@ class _ResultpageState extends State<Resultpage> {
                           borderRadius:
                               const BorderRadius.all(Radius.circular(2)),
                         ),
-                        width: isSmallScreen ? 360 : 1900,
+                        width: isSmallScreen ? 370 : 1900,
                         height: isSmallScreen ? 44 : 88,
                         child: Center(
                           child: Text(
@@ -245,7 +248,7 @@ class _ResultpageState extends State<Resultpage> {
                   Padding(
                     padding: EdgeInsets.only(
                       top: isSmallScreen ? 25 : 10,
-                      left: isSmallScreen ? 0 : 450,
+                      left: isSmallScreen ? 25 : 450,
                     ),
                     child: SizedBox(
                       height: isSmallScreen ? 116 : 200,
@@ -269,7 +272,7 @@ class _ResultpageState extends State<Resultpage> {
                                 ),
                               )
                             ],
-                          ), 
+                          ),
                           Row(
                             children: [
                               const SizedBox(
@@ -302,7 +305,7 @@ class _ResultpageState extends State<Resultpage> {
                                   style: TextStyle(
                                     color: const Color(0xFFCBCBCB),
                                     fontWeight: FontWeight.w500,
-                                    fontSize: isSmallScreen ? 16 : 30 ,
+                                    fontSize: isSmallScreen ? 16 : 30,
                                     fontFamily: GoogleFonts.inter().fontFamily,
                                   ),
                                 ),
@@ -385,10 +388,10 @@ class _ResultpageState extends State<Resultpage> {
                   ),
                   Padding(
                     padding: EdgeInsets.only(
-                        left: isSmallScreen ? 0 : 450,
+                        left: isSmallScreen ? 20 : 450,
                         top: isSmallScreen ? 25 : 10),
                     child: Container(
-                height: isSmallScreen ? 116 : 200,
+                      height: isSmallScreen ? 116 : 200,
                       width: isSmallScreen ? 159 : 500,
                       decoration: const BoxDecoration(
                         color: Color(0xFFD9D9D9),
@@ -450,12 +453,16 @@ class _ResultpageState extends State<Resultpage> {
                           fontWeight: FontWeight.bold,
                           fontSize: 16),
                     ),
-                    Text(
-                      'Practical',
-                      style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16),
+                    
+                    Padding(
+                      padding: const EdgeInsets.only(left: 40),
+                      child: Text(
+                        'Practical',
+                        style: TextStyle(
+                            fontFamily: GoogleFonts.inter().fontFamily,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16),
+                      ),
                     ),
                   ],
                 ),
@@ -497,7 +504,7 @@ class _ResultpageState extends State<Resultpage> {
                   ),
                   Padding(
                     padding: EdgeInsets.only(
-                        left: isSmallScreen ? 0 : 450,
+                        left: isSmallScreen ? 25 : 450,
                         top: isSmallScreen ? 10 : 10),
                     child: Container(
                       height: isSmallScreen ? 90 : 200,

@@ -4,13 +4,13 @@ import 'package:themanifestapp/user/login.dart';
 
 class Landingpage extends StatelessWidget {
   const Landingpage({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
-        
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(
               height: 20,
@@ -24,17 +24,16 @@ class Landingpage extends StatelessWidget {
                 )
               ],
             ),
-            Row(
-              children: [
-                Text(
-                  'Welcome to\nBROTOTYPE Manifest',
-                  style: TextStyle(
-                      fontSize: 32,
-                      color: Colors.black,
-                      fontFamily: GoogleFonts.poppins().fontFamily,
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
+            Padding(
+              padding: const EdgeInsets.only(top: 30,left: 26),
+              child: Text(
+                'Welcome to \nBROTOTYPE Manifest',
+                style: TextStyle(
+                    fontSize: 32,
+                    color: Colors.black,
+                    fontFamily: GoogleFonts.poppins().fontFamily,
+                    fontWeight: FontWeight.bold),
+              ),
             ),
             Image.asset('lib/images/landingpagephoto.png'),
             Padding(
@@ -51,7 +50,7 @@ class Landingpage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 10,bottom: 10),
+                  padding: const EdgeInsets.only(top: 20),
                   child: Container(
                     width: 338,
                     height: 50,
@@ -86,6 +85,7 @@ class Landingpage extends StatelessWidget {
                 ),
               ],
             ),
+           const  SizedBox(height: 70,)
           ],
         ),
       ),
