@@ -204,9 +204,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       );
                     } else {
-                      return const SliverToBoxAdapter(
+                      return  SliverToBoxAdapter(
                         child: Center(
-                          child: Text('Nothing found'),
+                          child: Image.asset('lib/images/nodata.jpeg'),
+
                         ),
                       );
                     }

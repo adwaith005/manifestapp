@@ -157,7 +157,7 @@ class _ResultpageState extends State<Resultpage> {
                           borderRadius:
                               const BorderRadius.all(Radius.circular(2)),
                         ),
-                        width: isSmallScreen ? 370 : 1900,
+                        width: isSmallScreen ? 390 : 1900,
                         height: isSmallScreen ? 44 : 88,
                         child: Center(
                           child: Text(
@@ -453,7 +453,6 @@ class _ResultpageState extends State<Resultpage> {
                           fontWeight: FontWeight.bold,
                           fontSize: 16),
                     ),
-                    
                     Padding(
                       padding: const EdgeInsets.only(left: 40),
                       child: Text(

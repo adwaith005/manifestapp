@@ -161,6 +161,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: Colors.grey,
                             fontFamily: GoogleFonts.inter().fontFamily),
                       ),
+               
                     ],
                   ),
                 ),

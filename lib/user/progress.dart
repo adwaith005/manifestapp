@@ -32,7 +32,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
         builder: (context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (!snapshot.hasData) {
-            return const CircularProgressIndicator();
+            return const  Center(child: CircularProgressIndicator());
           }
 
           List<QueryDocumentSnapshot<Map<String, dynamic>>> weeks =
@@ -52,70 +52,90 @@ class _ProgressScreenState extends State<ProgressScreen> {
             },
           );
 
-          return LineChart(
-            LineChartData(
-              gridData: const FlGridData(show: true),
-              titlesData: const FlTitlesData(
-                show: true,
-                leftTitles: AxisTitles(),
-                bottomTitles: AxisTitles(),
-                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              ),
-              borderData: FlBorderData(
-                show: true,
-                border: Border.all(
-                  color: const Color(0xff37434d),
-                  width: 1,
-                ),
-              ),
-              lineBarsData: [
-                LineChartBarData(
-                  spots: spots,
-                  isCurved: true,
-                  color: Colors.blue,
-                  dotData: const FlDotData(
-                    show: true,
-                  ),
-                  belowBarData: BarAreaData(
-                    show: true,
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment(0.8, 1),
-                      colors: <Color>[
-                        Color(0xff1f005c),
-                        Color(0xff5b0060),
-                        Color(0xff870160),
-                        Color(0xffac255e),
-                        Color(0xffca485c),
-                        Color(0xffe16b5c),
-                        Color(0xfff39060),
-                        Color(0xffffb56b),
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Expanded(
+                  child: LineChart(
+                    LineChartData(
+                      gridData: const FlGridData(show: true),
+                      titlesData: const FlTitlesData(
+                        show: true,
+                        leftTitles: AxisTitles(),
+                        bottomTitles: AxisTitles(),
+                        rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      ),
+                      borderData: FlBorderData(
+                        show: true,
+                        border: Border.all(
+                          color: const Color(0xff37434d),
+                          width: 1,
+                        ),
+                      ),
+                      lineBarsData: [
+                        LineChartBarData(
+                          spots: spots,
+                          isCurved: true,
+                          color: Colors.blue,
+                          dotData: const FlDotData(show: true),
+                          belowBarData: BarAreaData(
+                            show: true,
+                            gradient: const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment(0.8, 1),
+                              colors: <Color>[
+                                Color(0xff1f005c),
+                                Color(0xff5b0060),
+                                Color(0xff870160),
+                                Color(0xffac255e),
+                                Color(0xffca485c),
+                                Color(0xffe16b5c),
+                                Color(0xfff39060),
+                                Color(0xffffb56b),
+                              ],
+                              tileMode: TileMode.clamp,
+                            ),
+                          ),
+                        ),
                       ],
-                      tileMode: TileMode.clamp,
+                      minX: 0,
+                      maxX: weekDataList.length.toDouble() - 1,
+                      minY: 0,
+                      maxY: 30, // Adjust this value based on your data
+                      lineTouchData: LineTouchData(
+                        touchTooltipData: LineTouchTooltipData(
+                          tooltipBgColor: Colors.blueAccent,
+                          getTooltipItems: (List<LineBarSpot> touchedSpots) {
+                            return touchedSpots.map((barSpot) {
+                              final flSpot = spots[barSpot.spotIndex];
+                              final weekData = weekDataList[barSpot.spotIndex];
+                              return LineTooltipItem(
+                                'Total Mark: ${flSpot.y}\nWEEK: ${weekData.reviewName}',
+                                TextStyle(color: Colors.white),
+                              );
+                            }).toList();
+                          },
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ],
-              minX: 0,
-              maxX: weekDataList.length.toDouble() - 1,
-              minY:0,
-              maxY: 30, // Adjust this value based on your data
-              lineTouchData: LineTouchData(
-                touchTooltipData: LineTouchTooltipData(
-                  tooltipBgColor: Colors.blueAccent,
-                  getTooltipItems: (List<LineBarSpot> touchedSpots) {
-                    return touchedSpots.map((barSpot) {
-                      final flSpot = spots[barSpot.spotIndex];
-                      final weekData = weekDataList[barSpot.spotIndex];
-                      return LineTooltipItem(
-                        'Total Mark: ${flSpot.y}\nWEEK: ${weekData.reviewName}',
-                       const  TextStyle(color: Colors.white),
-                      );
-                    }).toList();
-                  },
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 20,
+                      height: 20,
+                      color: Colors.blue,
+                    ),
+                    SizedBox(width: 5),
+                    Text('Total Mark'),
+                  ],
                 ),
-              ),
+              ],
             ),
           );
         },

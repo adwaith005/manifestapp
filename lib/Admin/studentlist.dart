@@ -66,18 +66,38 @@ class _StudentListState extends State<StudentList> {
             child: StreamBuilder<QuerySnapshot>(
               stream: _studentsStream,
               builder: (context, snapshot) {
-                if (snapshot.hasData) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'No data found.',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  );
+                } else {
                   final documents = snapshot.data!.docs;
                   final filteredDocuments = documents
-                      .where((doc) =>
-                          doc['name'].toLowerCase().contains(_searchTerm))
+                      .where((doc) => doc['name'].toLowerCase().contains(_searchTerm))
                       .toList();
-                  print("Names of students in Batch $_batchNo:");
-                  for (var doc in filteredDocuments) {
-                    final studentData = doc.data() as Map<String, dynamic>;
-                    final name = studentData['name'] ?? '';
-                    print(name);
+
+                  if (filteredDocuments.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'No matching results found.',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    );
                   }
+
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ListView.builder(
@@ -98,8 +118,7 @@ class _StudentListState extends State<StudentList> {
                                 builder: (context) => WeekCreationPage(
                                   studentId: filteredDocuments[index].id,
                                   studentName: name,
-                                  weekNumber: filteredDocuments[index]
-                                      .id, // Pass the appropriate weekNumber
+                                  weekNumber: filteredDocuments[index].id,
                                 ),
                               ),
                             );
@@ -107,127 +126,119 @@ class _StudentListState extends State<StudentList> {
                           child: Card(
                             color: const Color(0xFF202628),
                             child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: const Color(0xFF3B4447),
-                                  radius: 28.0,
-                                  child: Center(
+                              leading: CircleAvatar(
+                                backgroundColor: const Color(0xFF3B4447),
+                                radius: 28.0,
+                                child: Center(
+                                  child: Text(
+                                    name.substring(0, 1).toUpperCase(),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontFamily: GoogleFonts.poppins().fontFamily,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              title: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 30),
+                                  child: Text(
+                                    name,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontFamily: GoogleFonts.poppins().fontFamily,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              subtitle: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 40),
+                                  child: Text(
+                                    domain,
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontFamily: GoogleFonts.poppins().fontFamily,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              trailing: PopupMenuButton<String>(
+                                icon: const Icon(Icons.more_vert),
+                                color: const Color(0xFF202628),
+                                itemBuilder: (context) => [
+                                  PopupMenuItem<String>(
+                                    value: 'edit',
                                     child: Text(
-                                      name.substring(0, 1).toUpperCase(),
+                                      'Edit',
                                       style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 20,
-                                        fontFamily:
-                                            GoogleFonts.poppins().fontFamily,
-                                        fontWeight: FontWeight.bold,
+                                        fontFamily: GoogleFonts.poppins().fontFamily,
                                       ),
                                     ),
                                   ),
-                                ),
-                                title: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 30),
+                                  PopupMenuItem<String>(
+                                    value: 'delete',
                                     child: Text(
-                                      name,
+                                      'Delete',
                                       style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontFamily:
-                                            GoogleFonts.poppins().fontFamily,
+                                        color: Colors.red,
+                                        fontFamily: GoogleFonts.poppins().fontFamily,
                                       ),
                                     ),
                                   ),
-                                ),
-                                subtitle: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 40),
-                                    child: Text(
-                                      domain,
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                        fontFamily:
-                                            GoogleFonts.poppins().fontFamily,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                trailing: PopupMenuButton<String>(
-                                    icon: const Icon(Icons.more_vert),
-                                    color: const Color(0xFF202628),
-                                    itemBuilder: (context) => [
-                                          PopupMenuItem<String>(
-                                            value: 'edit',
-                                            child: Text(
-                                              'Edit',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontFamily:
-                                                    GoogleFonts.poppins()
-                                                        .fontFamily,
-                                              ),
+                                ],
+                                onSelected: (value) async {
+                                  if (value == 'edit') {
+                                    showEditDialog(
+                                      context,
+                                      filteredDocuments[index].id,
+                                      studentData['name'],
+                                      studentData['phoneNumber'],
+                                      studentData['password'],
+                                    );
+                                  } else if (value == 'delete') {
+                                    await showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: const Text('Delete Student'),
+                                        content: Text(
+                                          'Are you sure you want to delete $name?'
+                                        ),
+                                        actions: [
+                                          ElevatedButton(
+                                            onPressed: () async {
+                                              await deleteStudent(
+                                                filteredDocuments[index].id,
+                                                batchNo
+                                              );
+                                              Navigator.pop(context);
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              primary: Colors.red,
                                             ),
+                                            child: const Text('Delete'),
                                           ),
-                                          PopupMenuItem<String>(
-                                            value: 'delete',
-                                            child: Text(
-                                              'Delete',
-                                              style: TextStyle(
-                                                color: Colors.red,
-                                                fontFamily:
-                                                    GoogleFonts.poppins()
-                                                        .fontFamily,
-                                              ),
-                                            ),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text('Cancel'),
                                           ),
                                         ],
-                                    onSelected: (value) async {
-                                      if (value == 'edit') {
-                                        showEditDialog(
-                                          context,
-                                          filteredDocuments[index].id,
-                                          studentData['name'],
-                                          studentData['phoneNumber'],
-                                          studentData['password'],
-                                        );
-                                      } else if (value == 'delete') {
-                                        await showDialog(
-                                          context: context,
-                                          builder: (context) => AlertDialog(
-                                            title: const Text('Delete Student'),
-                                            content: Text(
-                                                'Are you sure you want to delete $name?'),
-                                            actions: [
-                                              ElevatedButton(
-                                                onPressed: () async {
-                                                  await deleteStudent(
-                                                      filteredDocuments[index]
-                                                          .id,
-                                                      batchNo);
-                                                  Navigator.pop(context);
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                  primary: Colors.red,
-                                                ),
-                                                child: const Text('Delete'),
-                                              ),
-                                              ElevatedButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: const Text('Cancel'),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      }
-                                    })),
+                                      ),
+                                    );
+                                  }
+                                }
+                              ),
+                            ),
                           ),
                         );
                       },
                     ),
-                  );
-                } else {
-                  return const Center(
-                    child: CircularProgressIndicator(),
                   );
                 }
               },
