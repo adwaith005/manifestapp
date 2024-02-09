@@ -25,7 +25,7 @@ subprojects {
  afterEvaluate {
     if (project.hasProperty("android")) {
         android {
-            compileSdkVersion 33
+            compileSdkVersion 34
             defaultConfig {
                 multiDexEnabled true
             }
