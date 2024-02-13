@@ -31,8 +31,12 @@ class _ProgressScreenState extends State<ProgressScreen> {
             .snapshots(),
         builder: (context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-          if (!snapshot.hasData) {
-            return const  Center(child: CircularProgressIndicator());
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text('No data available'));
           }
 
           List<QueryDocumentSnapshot<Map<String, dynamic>>> weeks =
@@ -52,6 +56,13 @@ class _ProgressScreenState extends State<ProgressScreen> {
             },
           );
 
+          double totalWeeks = 28; // Total number of weeks
+          double completedWeeks =
+              weekDataList.length.toDouble(); // Number of completed weeks
+
+          // Calculate the percentage of completed weeks
+          double progressValue = completedWeeks / totalWeeks;
+
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -62,10 +73,12 @@ class _ProgressScreenState extends State<ProgressScreen> {
                       gridData: const FlGridData(show: true),
                       titlesData: const FlTitlesData(
                         show: true,
-                        leftTitles: AxisTitles(),
-                        bottomTitles: AxisTitles(),
-                        rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                        leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true,)),
+                        bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
+                        rightTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false)),
+                        topTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false)),
                       ),
                       borderData: FlBorderData(
                         show: true,
@@ -113,7 +126,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                               final weekData = weekDataList[barSpot.spotIndex];
                               return LineTooltipItem(
                                 'Total Mark: ${flSpot.y}\nWEEK: ${weekData.reviewName}',
-                                TextStyle(color: Colors.white),
+                                const TextStyle(color: Colors.white),
                               );
                             }).toList();
                           },
@@ -122,19 +135,14 @@ class _ProgressScreenState extends State<ProgressScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 20,
-                      height: 20,
-                      color: Colors.blue,
-                    ),
-                    SizedBox(width: 5),
-                    Text('Total Mark'),
-                  ],
+                const SizedBox(height: 20),
+                LinearProgressIndicator(
+                  value: progressValue, // Adjusted progress value
+                  backgroundColor: Colors.grey[300],
+                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
                 ),
+                const SizedBox(height: 10),
+                const Text('Overall Progress'),
               ],
             ),
           );
